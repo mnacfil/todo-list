@@ -7,20 +7,26 @@ datasource db {
   url      = "file:../../../../../test.db"
 }
 
-model Post {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Task {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   title       String
   description String?
-  published   Boolean  @default(false)
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    Int
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  dueDate     DateTime?
+  priority    String?
+  reminder    String?
+  labels      String?
 }
 
+// Project model
+// labels model
+
 model User {
-  id    Int     @id @default(autoincrement())
+  id    String  @id @default(uuid())
   email String  @unique
   name  String?
-  post  Post[]
+  tasks Task[]
 }

@@ -1,19 +1,34 @@
+import AddTask from "@/components/form/add-task";
 import React from "react";
+import { getAllTasks, getCurrentUser } from "./action";
+import { redirect } from "next/navigation";
+import { Dialog, DialogTitle } from "@/components/ui/dialog";
 
 type Props = {};
 
-const TodayPage = (props: Props) => {
+const TodayPage = async (props: Props) => {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/sign-up");
+  }
+  const tasks = await getAllTasks();
+
   return (
     <>
-      <div className="bg-green-200 h-screen">
-        <h1 className="text-red-500">Todays Page</h1>
-        <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis
-          fugiat maiores voluptatibus aliquid odit totam illum porro
-          perspiciatis doloribus, ullam perferendis labore architecto eum
-          soluta, alias deserunt fugit, suscipit ut!
-        </p>
+      <h2>Today</h2>
+      {tasks.length > 0 ? <p>{tasks.length} tasks</p> : null}
+      <div className="flex w-full gap-4 flex-col">
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <Dialog key={task.id}>
+              <DialogTitle>{task.title}</DialogTitle>
+            </Dialog>
+          ))
+        ) : (
+          <p>Empty task</p>
+        )}
       </div>
+      <AddTask user={user} />
     </>
   );
 };

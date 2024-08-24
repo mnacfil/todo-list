@@ -20,7 +20,9 @@ const TodayPage = async (props: Props) => {
       {tasks.length > 0 ? <p>{tasks.length} tasks</p> : null}
       <div className="flex w-full gap-4 flex-col divide-y divide-slate-100 mt-4">
         {tasks.length > 0 ? (
-          tasks.map((task) => <EditTask key={task.id} task={task} />)
+          tasks.map((task) => (
+            <EditTask key={task.id} task={task} user={user} />
+          ))
         ) : (
           <p>Empty task</p>
         )}

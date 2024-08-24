@@ -10,24 +10,36 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Prisma, Task } from "@prisma/client";
+import { Prisma, Task, User } from "@prisma/client";
 import { DiscIcon, Edit2, Ellipsis, InboxIcon, TableIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { deleteTask } from "../action";
+import { addTask, deleteTask } from "../action";
 import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 type Props = {
   task: Task;
+  user: User;
 };
 
-const EditTask = ({ task }: Props) => {
+const EditTask = ({ task, user }: Props) => {
   const pathname = usePathname();
 
   const handleCheckTask = async () => {
-    await deleteTask({ taskId: task.id, pathname });
+    const deletedTask = await deleteTask({ taskId: task.id, pathname });
     toast({
-      title: "Success",
+      title: "1 task completed",
+      action: (
+        <ToastAction
+          altText="Goto today to undo"
+          onClick={async () =>
+            await addTask({ title: deletedTask.title, user, pathname })
+          }
+        >
+          Undo
+        </ToastAction>
+      ),
     });
   };
 
@@ -42,7 +54,9 @@ const EditTask = ({ task }: Props) => {
               className="rounded-full"
               onCheckedChange={handleCheckTask}
             />
-            <Label htmlFor="task">{task.title}</Label>
+            <Label htmlFor="task" className="text-sm font-light">
+              {task.title}
+            </Label>
           </div>
           <div className="flex items-center gap-1">
             <Edit2 className="text-gray-400" size={18} />

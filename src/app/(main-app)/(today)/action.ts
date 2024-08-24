@@ -20,12 +20,13 @@ export const addTask = async ({ title, user, pathname }: AddTaskParams) => {
 };
 
 export const deleteTask = async ({ taskId, pathname }: DeleteTaskParams) => {
-  await db.task.delete({
+  const task = await db.task.delete({
     where: {
       id: taskId,
     },
   });
   revalidatePath(pathname);
+  return task;
 };
 
 export const getAllTasks = async () => {

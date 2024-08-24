@@ -28,8 +28,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { addTask } from "@/app/(main-app)/(today)/action";
-import { User } from "@prisma/client";
+import { addTask, updateTask } from "@/app/(main-app)/(today)/action";
+import { Task, User } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";
@@ -47,16 +47,23 @@ const schema = z.object({
 
 type Props = {
   user: User;
+  isEditing?: boolean;
+  currentTask?: Task;
+  onCancel: () => void;
 };
 
-const AddTask = ({ user }: Props) => {
+const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
   const { toast } = useToast();
   const pathname = usePathname();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: isEditing ? currentTask?.title : "",
+      description: isEditing
+        ? currentTask?.description
+          ? currentTask.description
+          : ""
+        : "",
       // priority: "",
       // labels: "",
     },
@@ -64,13 +71,28 @@ const AddTask = ({ user }: Props) => {
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      const response = await addTask({ title: values.title, user, pathname });
-      if (response) {
-        toast({
-          title: "Success",
-          description: "Task added on you list.",
-        });
-        form.reset();
+      if (isEditing) {
+        if (currentTask?.id) {
+          await updateTask({
+            taskId: currentTask.id,
+            newTask: {
+              ...currentTask,
+              title: values.title,
+              description: values.description,
+            },
+            pathname: pathname,
+          });
+          onCancel();
+        }
+      } else {
+        const response = await addTask({ title: values.title, user, pathname });
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Task added on you list.",
+          });
+          form.reset();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -81,8 +103,6 @@ const AddTask = ({ user }: Props) => {
       });
     }
   };
-
-  console.log(form.getValues("title").length);
 
   return (
     <Form {...form}>
@@ -151,6 +171,7 @@ const AddTask = ({ user }: Props) => {
                 <Button
                   variant={"outline"}
                   className="bg-gray-100/55 text-black"
+                  onClick={onCancel}
                 >
                   Cancel
                 </Button>
@@ -178,7 +199,7 @@ const AddTask = ({ user }: Props) => {
                 }
               )}`}
             >
-              Add Task
+              {isEditing ? "Save" : "Add Task"}
             </Button>
           </div>
         </div>

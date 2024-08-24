@@ -1,9 +1,10 @@
-import AddTask from "@/components/form/add-task";
 import React from "react";
+
 import { getAllTasks, getCurrentUser } from "./action";
 import { redirect } from "next/navigation";
-import { Dialog, DialogTitle } from "@/components/ui/dialog";
-import EditTask from "./_components/edit-task";
+import Task from "./_components/task";
+import { CircleCheckBigIcon } from "lucide-react";
+import ToggleAddTask from "./_components/toggle-add-task";
 
 type Props = {};
 
@@ -16,18 +17,21 @@ const TodayPage = async (props: Props) => {
 
   return (
     <>
-      <h2>Today</h2>
-      {tasks.length > 0 ? <p>{tasks.length} tasks</p> : null}
+      <h2 className="text-2xl font-bold mb-3">Today</h2>
+      {tasks.length > 0 ? (
+        <div className="flex items-center gap-2">
+          <CircleCheckBigIcon size={16} className="text-gray-500" />
+          <p className="text-gray-500 text-sm">{tasks.length} tasks</p>
+        </div>
+      ) : null}
       <div className="flex w-full gap-4 flex-col divide-y divide-slate-100 mt-4">
         {tasks.length > 0 ? (
-          tasks.map((task) => (
-            <EditTask key={task.id} task={task} user={user} />
-          ))
+          tasks.map((task) => <Task key={task.id} task={task} user={user} />)
         ) : (
           <p>Empty task</p>
         )}
       </div>
-      <AddTask user={user} />
+      <ToggleAddTask user={user} />
     </>
   );
 };

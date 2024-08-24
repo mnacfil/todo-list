@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { AddTaskParams, DeleteTaskParams } from "./type";
+import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./type";
 
 export const addTask = async ({ title, user, pathname }: AddTaskParams) => {
   const task = await db.task.create({
@@ -32,6 +32,19 @@ export const deleteTask = async ({ taskId, pathname }: DeleteTaskParams) => {
 export const getAllTasks = async () => {
   const tasks = await db.task.findMany();
   return tasks;
+};
+
+export const updateTask = async ({
+  taskId,
+  newTask,
+  pathname,
+}: UpdateTaskParams) => {
+  const updatedTask = await db.task.update({
+    where: { id: taskId },
+    data: { ...newTask },
+  });
+  revalidatePath(pathname);
+  return updatedTask;
 };
 
 export const createUser = async () => {

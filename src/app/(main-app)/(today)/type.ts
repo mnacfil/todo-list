@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Task, User } from "@prisma/client";
 
 export type AddTaskParams = {
   title: string;
@@ -8,5 +8,11 @@ export type AddTaskParams = {
 
 export type DeleteTaskParams = {
   taskId: string;
+  pathname: string;
+};
+
+export type UpdateTaskParams = {
+  taskId: string;
+  newTask: Task;
   pathname: string;
 };

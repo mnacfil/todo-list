@@ -2,8 +2,11 @@
 
 import React from "react";
 import {
+  CopyPlus,
   Edit,
   Ellipsis,
+  Grip,
+  Link,
   List,
   ListTodo,
   MoveUp,
@@ -16,7 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Task } from "@prisma/client";
+import { Task, User } from "@prisma/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,17 +31,40 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteTask } from "../action";
+import { addTask, deleteTask, getCurrentUser } from "../action";
 import { usePathname } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
 
 type Props = {
   task: Task;
+  user: User;
 };
 
-const MoreOptions = ({ task }: Props) => {
+const MoreOptions = ({ task, user }: Props) => {
   const pathname = usePathname();
   const handleDeleteTask = async () => {
     await deleteTask({ taskId: task.id, pathname });
+  };
+
+  const handleDuplicateTask = async () => {
+    try {
+      const res = await addTask({
+        title: task.title,
+        description: task?.description ? task.description : "",
+        pathname,
+        user,
+      });
+      if (res.id) {
+        toast({
+          title: "Task duplicated",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -47,7 +73,7 @@ const MoreOptions = ({ task }: Props) => {
         <Ellipsis size={16} className="text-gray-400 cursor-pointer" />
       </PopoverTrigger>
       <PopoverContent className="sm:max-w-[250px]">
-        <div className="flex flex-col divide-y divide-slate-300 mt-5 gap-2 w-full">
+        <div className="flex flex-col divide-y divide-slate-300 mt-5 gap-3 w-full">
           <div className="flex flex-col gap-2">
             <ActionRow Icon={Edit} title="Edit" endInfo="Ctrl E" />
             <ActionRow
@@ -55,6 +81,20 @@ const MoreOptions = ({ task }: Props) => {
               title="Go to project"
               EndInfoIcon={MoveUp}
               endInfo="G"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <ActionRow Icon={Grip} title="Move to..." endInfo="V" />
+            <ActionRow
+              Icon={CopyPlus}
+              title="Duplicate"
+              onClick={handleDuplicateTask}
+            />
+            <ActionRow
+              Icon={Link}
+              title="Copy link to task"
+              endInfo="Ctrl C"
+              EndInfoIcon={MoveUp}
             />
           </div>
           <div className="flex flex-col gap-2">

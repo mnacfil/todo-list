@@ -34,7 +34,9 @@ const ActionRow = ({
       </div>
       <div className="flex items-center justify-between">
         {EndInfoIcon && <EndInfoIcon size={12} className="text-gray-400" />}
-        <p className={`text-[11px] text-gray-700 font-light`}>{endInfo}</p>
+        {endInfo && (
+          <p className={`text-[11px] text-gray-700 font-light`}>{endInfo}</p>
+        )}
       </div>
     </div>
   );

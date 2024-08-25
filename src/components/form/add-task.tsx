@@ -85,7 +85,12 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           onCancel();
         }
       } else {
-        const response = await addTask({ title: values.title, user, pathname });
+        const response = await addTask({
+          title: values.title,
+          description: values.description,
+          user,
+          pathname,
+        });
         if (response) {
           toast({
             title: "Success",
@@ -119,7 +124,7 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
                 <Input
                   placeholder="Task name"
                   {...field}
-                  className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 font-semibold placeholder:text-gray-400 py-0"
+                  className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 font-semibold placeholder:text-gray-400 py-0 text-gray-700"
                 />
               </FormControl>
               <FormMessage className="px-3" />
@@ -136,7 +141,7 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
                 <Textarea
                   placeholder="Description"
                   {...field}
-                  className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 placeholder:text-gray-300 text-[14px] font-normal py-0"
+                  className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 placeholder:text-gray-300 text-[14px] py-0 text-gray-700 font-light"
                 />
               </FormControl>
               <FormMessage />

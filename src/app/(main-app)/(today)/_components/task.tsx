@@ -11,13 +11,22 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Prisma, Task, User } from "@prisma/client";
-import { DiscIcon, Edit2, Ellipsis, InboxIcon, TableIcon } from "lucide-react";
+import {
+  Calendar,
+  DiscIcon,
+  Edit2,
+  Ellipsis,
+  InboxIcon,
+  MessageSquare,
+  TableIcon,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { addTask, deleteTask, updateTask } from "../action";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import AddTask from "@/components/form/add-task";
+import MoreOptions from "./more-options";
 
 type Props = {
   task: Task;
@@ -62,15 +71,21 @@ const EditTask = ({ task, user }: Props) => {
           {/* <DialogTrigger className="cursor-pointer"> */}
           <div className="p-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2">
                 <Checkbox
                   id="task"
-                  className="rounded-full"
+                  className="rounded-full text-gray-500!"
                   onCheckedChange={handleCheckTask}
+                  color="red"
                 />
-                <Label htmlFor="task" className="text-sm font-light">
-                  {task.title}
-                </Label>
+                <div className="flex flex-col gap-[0.5px]">
+                  <Label htmlFor="task" className="text-sm font-light">
+                    {task.title}
+                  </Label>
+                  <p className="p-0 text-sm font-light text-gray-500">
+                    {task.description}
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <Edit2
@@ -78,9 +93,9 @@ const EditTask = ({ task, user }: Props) => {
                   size={16}
                   onClick={handleShowAddTaskForm}
                 />
-                <DiscIcon className="text-gray-400" size={16} />
-                <DiscIcon className="text-gray-400" size={16} />
-                <Ellipsis className="text-gray-400" size={16} />
+                <Calendar className="text-gray-400" size={16} />
+                <MessageSquare className="text-gray-400" size={16} />
+                <MoreOptions task={task} />
               </div>
             </div>
             <div className="flex-1 flex items-center gap-1">

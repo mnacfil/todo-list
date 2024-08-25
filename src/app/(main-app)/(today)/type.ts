@@ -2,6 +2,7 @@ import { Task, User } from "@prisma/client";
 
 export type AddTaskParams = {
   title: string;
+  description?: string;
   user: User;
   pathname: string;
 };

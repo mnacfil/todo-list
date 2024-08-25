@@ -4,10 +4,16 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./type";
 
-export const addTask = async ({ title, user, pathname }: AddTaskParams) => {
+export const addTask = async ({
+  title,
+  user,
+  description,
+  pathname,
+}: AddTaskParams) => {
   const task = await db.task.create({
     data: {
       title,
+      description,
       author: {
         connect: {
           id: user.id,

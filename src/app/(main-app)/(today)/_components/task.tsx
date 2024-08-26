@@ -95,7 +95,11 @@ const EditTask = ({ task, user }: Props) => {
                 />
                 <Calendar className="text-gray-400" size={16} />
                 <MessageSquare className="text-gray-400" size={16} />
-                <MoreOptions task={task} user={user} />
+                <MoreOptions
+                  task={task}
+                  user={user}
+                  onClickEdit={handleShowAddTaskForm}
+                />
               </div>
             </div>
             <div className="flex-1 flex items-center gap-1">

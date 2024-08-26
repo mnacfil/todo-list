@@ -38,9 +38,10 @@ import { toast } from "@/components/ui/use-toast";
 type Props = {
   task: Task;
   user: User;
+  onClickEdit: () => void;
 };
 
-const MoreOptions = ({ task, user }: Props) => {
+const MoreOptions = ({ task, user, onClickEdit }: Props) => {
   const pathname = usePathname();
   const handleDeleteTask = async () => {
     await deleteTask({ taskId: task.id, pathname });
@@ -75,7 +76,12 @@ const MoreOptions = ({ task, user }: Props) => {
       <PopoverContent className="sm:max-w-[250px]">
         <div className="flex flex-col divide-y divide-slate-300 mt-5 gap-3 w-full">
           <div className="flex flex-col gap-2">
-            <ActionRow Icon={Edit} title="Edit" endInfo="Ctrl E" />
+            <ActionRow
+              Icon={Edit}
+              title="Edit"
+              endInfo="Ctrl E"
+              onClick={onClickEdit}
+            />
             <ActionRow
               Icon={List}
               title="Go to project"

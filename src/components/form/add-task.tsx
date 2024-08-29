@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "../ui/card";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -33,15 +33,39 @@ import { Task, User } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";
-import { CalendarIcon, Clock, FlagIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  Check,
+  Clock,
+  Ellipsis,
+  FlagIcon,
+  XIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { priorities } from "../constants";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const schema = z.object({
   title: z.string().min(1),
   description: z.string(),
-  // dueData: z.date(),
-  // priority: z.string(),
+  dueDate: z.date(),
+  priority: z.string(),
   // labels: z.string(),
 });
 
@@ -52,9 +76,13 @@ type Props = {
   onCancel: () => void;
 };
 
+type TaskPriority = "p1" | "p2" | "p3" | "p4";
+
 const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
   const { toast } = useToast();
   const pathname = usePathname();
+  const [taskPriority, setTaskPriority] = useState<TaskPriority>("p4");
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -64,7 +92,12 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           ? currentTask.description
           : ""
         : "",
-      // priority: "",
+      priority: "",
+      // dueDate: isEditing
+      //   ? currentTask?.dueDate
+      //     ? currentTask.dueDate
+      //     : ""
+      //   : "",
       // labels: "",
     },
   });
@@ -79,6 +112,7 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
               ...currentTask,
               title: values.title,
               description: values.description,
+              priority: values.priority,
             },
             pathname: pathname,
           });
@@ -135,35 +169,142 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
         <FormField
           control={form.control}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Textarea
-                  placeholder="Description"
-                  {...field}
-                  className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 placeholder:text-gray-300 text-[14px] py-0 text-gray-700 font-light"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormControl>
+                  <Textarea
+                    placeholder="Description"
+                    {...field}
+                    className="border-none outline-none ring-offset-transparent focus:outline-none focus:border-none focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:ring-0 placeholder:text-gray-300 text-[14px] py-0 text-gray-700 font-light"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <div className="flex gap-2 items-center m-3">
-          <Button className="bg-white text-gray-900 border border-gray-300">
-            <CalendarIcon />
-            Due date
-          </Button>
-          <Button className="bg-white text-gray-900 border border-gray-300">
-            {" "}
-            <FlagIcon /> Priority
-          </Button>
-          <Button className="bg-white text-gray-900 border border-gray-300">
-            <Clock /> Reminders
-          </Button>
-          <Button className="bg-white text-gray-900 border border-gray-300">
-            ...
-          </Button>
+          <FormField
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem>
+                <TooltipProvider>
+                  <Tooltip>
+                    <FormControl>
+                      <Popover>
+                        <TooltipTrigger asChild>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-1 h-4 w-4 opacity-50" />
+                              {field.value ? (
+                                format(field.value, "PP")
+                              ) : (
+                                <span>Due date</span>
+                              )}
+                              {/* <XIcon className="ml-1 h-4 w-4 opacity-50 z-10" /> */}
+                            </Button>
+                          </PopoverTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Set due date</TooltipContent>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="priority"
+            render={({ field }) => (
+              <FormItem>
+                <TooltipProvider>
+                  <Tooltip>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <TooltipTrigger asChild>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                        </TooltipTrigger>
+                      </FormControl>
+                      <TooltipContent>
+                        <div className="flex items-center space-x-1">
+                          <p>Set priority </p>
+                          {priorities.map((priority, i, arr) => (
+                            <span
+                              key={priority.label}
+                              className="p-1 bg-gray-100 rounded-sm"
+                            >
+                              {i < arr.length - 1
+                                ? `${priority.label}, `
+                                : `${priority.label}`}{" "}
+                            </span>
+                          ))}
+                        </div>
+                      </TooltipContent>
+                      <SelectContent>
+                        {priorities.map((priority) => (
+                          <SelectItem
+                            value={priority.value}
+                            key={priority.label}
+                          >
+                            <div className="flex gap-1 items-center">
+                              <FlagIcon
+                                color={priority.color}
+                                className="h-4 w-4 opacity-50"
+                              />
+                              {priority.value}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Tooltip>
+                </TooltipProvider>
+              </FormItem>
+            )}
+          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button className="bg-white text-gray-900 border border-gray-300">
+                  <Clock className="w-4 h-4 opacity-50" /> Reminders
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Add reminers{" "}
+                <span className="p-1 bg-gray-100 rounded-sm"> ! </span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button className="bg-white text-gray-900 border border-gray-300">
+                  <Ellipsis className="w-3 h-3 opacity-50" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>More actions</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <Separator />

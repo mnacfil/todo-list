@@ -10,22 +10,22 @@ import {
 export const priorities = [
   {
     color: "red",
-    label: "P1",
+    label: "p1",
     value: "Priority 1",
   },
   {
     color: "orange",
-    label: "P2",
+    label: "p2",
     value: "Priority 2",
   },
   {
     color: "blue",
-    label: "P3",
+    label: "p3",
     value: "Priority 3",
   },
   {
     color: "black",
-    label: "P4",
+    label: "p4",
     value: "Priority 4",
   },
 ];

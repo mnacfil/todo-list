@@ -7,6 +7,7 @@ import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./type";
 export const addTask = async ({
   title,
   user,
+  priority,
   description,
   pathname,
 }: AddTaskParams) => {
@@ -14,6 +15,7 @@ export const addTask = async ({
     data: {
       title,
       description,
+      priority,
       author: {
         connect: {
           id: user.id,

@@ -64,7 +64,6 @@ import {
 const schema = z.object({
   title: z.string().min(1),
   description: z.string(),
-  dueDate: z.date(),
   priority: z.string(),
   // labels: z.string(),
 });
@@ -93,12 +92,6 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           : ""
         : "",
       priority: "",
-      // dueDate: isEditing
-      //   ? currentTask?.dueDate
-      //     ? currentTask.dueDate
-      //     : ""
-      //   : "",
-      // labels: "",
     },
   });
 
@@ -122,9 +115,11 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
         const response = await addTask({
           title: values.title,
           description: values.description,
+          priority: values.priority,
           user,
           pathname,
         });
+
         if (response) {
           toast({
             title: "Success",
@@ -186,7 +181,7 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
         />
 
         <div className="flex gap-2 items-center m-3">
-          <FormField
+          {/* <FormField
             control={form.control}
             name="dueDate"
             render={({ field }) => (
@@ -210,7 +205,6 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
                               ) : (
                                 <span>Due date</span>
                               )}
-                              {/* <XIcon className="ml-1 h-4 w-4 opacity-50 z-10" /> */}
                             </Button>
                           </PopoverTrigger>
                         </TooltipTrigger>
@@ -229,7 +223,21 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
                 </TooltipProvider>
               </FormItem>
             )}
-          />
+          /> */}
+          {/* Todo */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  variant={"outline"}
+                  className="bg-white text-gray-900 border border-gray-300"
+                >
+                  <CalendarIcon className="w-3 h-3 mr-1 opacity-50" /> Due date
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>More actions</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <FormField
             control={form.control}
             name="priority"
@@ -285,7 +293,10 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button className="bg-white text-gray-900 border border-gray-300">
+                <Button
+                  variant={"outline"}
+                  className="bg-white text-gray-900 border border-gray-300"
+                >
                   <Clock className="w-4 h-4 opacity-50" /> Reminders
                 </Button>
               </TooltipTrigger>
@@ -298,7 +309,10 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Button className="bg-white text-gray-900 border border-gray-300">
+                <Button
+                  variant={"outline"}
+                  className="bg-white text-gray-900 border border-gray-300"
+                >
                   <Ellipsis className="w-3 h-3 opacity-50" />
                 </Button>
               </TooltipTrigger>

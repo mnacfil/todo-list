@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+"use client";
+
 import {
   Sheet,
   SheetContent,
@@ -16,10 +16,17 @@ import {
   sidebarLinks,
 } from "@/components/constants/sidebar";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import AddTask from "@/components/form/add-task";
+import { getCurrentUser } from "@/app/(main-app)/(today)/action";
+import { redirect, usePathname } from "next/navigation";
+import clsx from "clsx";
 
 type Props = {};
 
 const Sidebar = (props: Props) => {
+  const pathname = usePathname();
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -38,27 +45,59 @@ const Sidebar = (props: Props) => {
           </Sheet>
         </div>
       </div>
-      <div className="flex items-center space-x-1 cursor-pointer my-3">
-        <CirclePlus className="w-6 h-6 ml-[-3px] fill-red-500 text-white" />
-        <p className="text-sm font-semibold file:text-red-800">Add task</p>
-      </div>
-      <div className="flex items-center space-x-2 cursor-pointer mb-2">
+      <Dialog>
+        <DialogTrigger>
+          <div className="flex items-center space-x-1 cursor-pointer my-3">
+            <CirclePlus className="w-6 h-6 ml-[-3px] fill-red-500 text-white" />
+            <p className="text-sm font-semibold file:text-red-800">Add task</p>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[700px]">
+          {/* <AddTask user={user} /> */}
+          <p>Add task</p>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex items-center space-x-2 cursor-pointer p-2 hover:bg-gray-100 rounded-sm">
         <Search className="w-4 h-4 opacity-50" />
         <p className="text-primary text-sm">Search</p>
       </div>
-      <div className="flex flex-col w-full space-y-2">
+      <div className="flex flex-col w-full">
         {sidebarLinks.map((link) => {
+          const isActive = link.href === pathname;
           return (
             <Link
               key={link.title}
               href={link.href}
-              className="flex items-center justify-between"
+              className={clsx(
+                `flex items-center justify-between p-2 hover:bg-gray-100/50 rounded-sm`,
+                isActive ? "bg-orange-400/10" : "bg-none"
+              )}
             >
               <div className="flex items-center space-x-2">
-                <link.Icon className="w-4 h-4 opacity-50" />
-                <p className="text-primary text-sm">{link.title}</p>
+                <link.Icon
+                  className={clsx(
+                    "w-4 h-4 opacity-50",
+                    isActive && "text-red-700"
+                  )}
+                />
+                <p
+                  className={clsx(
+                    "text-primary text-sm",
+                    isActive && "text-red-800"
+                  )}
+                >
+                  {link.title}
+                </p>
               </div>
-              <p className="text-muted-foreground/50 text-sm">3</p>
+              <p
+                className={clsx(
+                  "text-muted-foreground/50 text-sm",
+                  isActive && "text-red-800"
+                )}
+              >
+                3
+              </p>
             </Link>
           );
         })}
@@ -68,17 +107,25 @@ const Sidebar = (props: Props) => {
         <p className="text-sm font-semibold text-gray-500">Favorites</p>
         <div className="flex flex-col w-full space-y-3">
           {favoriteLinks.map((link) => {
+            const isActive = link.href === pathname;
             return (
               <Link
                 key={link.title}
                 href={link.href}
-                className="flex items-center justify-between pl-2 pr-1 py-1 hover:bg-gray-100 rounded-sm"
+                className="flex items-center justify-between p-2 hover:bg-gray-100/50 rounded-sm"
               >
                 <div className="flex items-center space-x-2">
                   <link.Icon className="w-4 h-4 opacity-50" />
                   <p className="text-primary text-sm">{link.title}</p>
                 </div>
-                <p className="text-muted-foreground/50 text-sm">3</p>
+                <p
+                  className={clsx(
+                    "text-muted-foreground/50 text-sm",
+                    isActive && "text-red-800"
+                  )}
+                >
+                  3
+                </p>
               </Link>
             );
           })}
@@ -92,19 +139,42 @@ const Sidebar = (props: Props) => {
             USED: 5/5
           </span>
         </div>
-        <div className="flex flex-col w-full space-y-3">
+        <div className="flex flex-col w-full">
           {projectsLinks.map((link) => {
+            const isActive = link.href === pathname;
             return (
               <Link
                 key={link.title}
                 href={link.href}
-                className="flex items-center justify-between pl-2 pr-1 py-1 hover:bg-gray-100 rounded-sm"
+                className={clsx(
+                  `flex items-center justify-between p-2 hover:bg-gray-100/50 rounded-sm`,
+                  isActive ? "bg-orange-400/10" : "bg-none"
+                )}
               >
                 <div className="flex items-center space-x-2">
-                  <link.Icon className="w-4 h-4 opacity-50" />
-                  <p className="text-primary text-sm">{link.title}</p>
+                  <link.Icon
+                    className={clsx(
+                      "w-4 h-4 opacity-50",
+                      isActive && "text-red-700"
+                    )}
+                  />
+                  <p
+                    className={clsx(
+                      "text-primary text-sm",
+                      isActive && "text-red-800"
+                    )}
+                  >
+                    {link.title}
+                  </p>
                 </div>
-                <p className="text-muted-foreground/50 text-sm">3</p>
+                <p
+                  className={clsx(
+                    "text-muted-foreground/50 text-sm",
+                    isActive && "text-red-800"
+                  )}
+                >
+                  3
+                </p>
               </Link>
             );
           })}

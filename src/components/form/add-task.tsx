@@ -72,7 +72,7 @@ type Props = {
   user: User;
   isEditing?: boolean;
   currentTask?: Task;
-  onCancel: () => void;
+  onCancel?: () => void;
 };
 
 type TaskPriority = "p1" | "p2" | "p3" | "p4";
@@ -109,7 +109,7 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
             },
             pathname: pathname,
           });
-          onCancel();
+          onCancel && onCancel();
         }
       } else {
         const response = await addTask({

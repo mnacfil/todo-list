@@ -1,9 +1,14 @@
-import { CalendarDays, Calendar, LayoutGrid, Hash } from "lucide-react";
+import { CalendarDays, Calendar, LayoutGrid, Hash, Inbox } from "lucide-react";
 
 export const sidebarLinks = [
   {
+    Icon: Inbox,
+    href: "/inbox",
+    title: "Inbox",
+  },
+  {
     Icon: Calendar,
-    href: "/today",
+    href: "/",
     title: "Today",
   },
   {

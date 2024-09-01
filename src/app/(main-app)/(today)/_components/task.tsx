@@ -16,6 +16,7 @@ import {
   DiscIcon,
   Edit2,
   Ellipsis,
+  Inbox,
   InboxIcon,
   MessageSquare,
   TableIcon,
@@ -27,31 +28,35 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import AddTask from "@/components/form/add-task";
 import MoreOptions from "./more-options";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   task: Task;
   user: User;
 };
 
-const EditTask = ({ task, user }: Props) => {
+const CurrentTask = ({ task, user }: Props) => {
   const pathname = usePathname();
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleCheckTask = async () => {
-    const deletedTask = await deleteTask({ taskId: task.id, pathname });
-    toast({
-      title: "1 task completed",
-      action: (
-        <ToastAction
-          altText="Goto today to undo"
-          onClick={async () =>
-            await addTask({ title: deletedTask.title, user, pathname })
-          }
-        >
-          Undo
-        </ToastAction>
-      ),
-    });
+  const handleCheckTask = async (e: CheckedState) => {
+    console.log(e.valueOf());
+
+    // const deletedTask = await deleteTask({ taskId: task.id, pathname });
+    // toast({
+    //   title: "1 task completed",
+    //   action: (
+    //     <ToastAction
+    //       altText="Goto today to undo"
+    //       onClick={async () =>
+    //         await addTask({ title: deletedTask.title, user, pathname })
+    //       }
+    //     >
+    //       Undo
+    //     </ToastAction>
+    //   ),
+    // });
   };
 
   const handleCancelEdit = () => setIsEditing(false);
@@ -68,24 +73,25 @@ const EditTask = ({ task, user }: Props) => {
         />
       ) : (
         <Dialog>
-          {/* <DialogTrigger className="cursor-pointer"> */}
           <div className="p-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
                 <Checkbox
                   id="task"
                   className="rounded-full text-gray-500!"
-                  onCheckedChange={handleCheckTask}
+                  onCheckedChange={(e) => handleCheckTask(e)}
                   color="red"
                 />
-                <div className="flex flex-col gap-[0.5px]">
-                  <Label htmlFor="task" className="text-sm font-light">
-                    {task.title}
-                  </Label>
-                  <p className="p-0 text-sm font-light text-gray-500">
-                    {task.description}
-                  </p>
-                </div>
+                <DialogTrigger asChild className="cursor-pointer">
+                  <div className="flex flex-col gap-[0.5px]">
+                    <Label htmlFor="task" className="text-sm font-light">
+                      {task.title}
+                    </Label>
+                    <p className="p-0 text-sm font-light text-gray-500">
+                      {task.description}
+                    </p>
+                  </div>
+                </DialogTrigger>
               </div>
               <div className="flex items-center gap-1">
                 <Edit2
@@ -107,12 +113,18 @@ const EditTask = ({ task, user }: Props) => {
               <InboxIcon className="text-gray-500" size={12} />
             </div>
           </div>
-          {/* </DialogTrigger> */}
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{task.title}</DialogTitle>
-              <DialogDescription>blah blah blag blah</DialogDescription>
+          <DialogContent className="w-full sm:max-w-4xl p-0 min-h-[80%]">
+            <DialogHeader className="flex px-4 py-2 flex-row items-center justify-between">
+              <div className="flex items-center space-x-1">
+                <Inbox className="w-4 h-4 opacity-50" /> inbox
+              </div>
+              {/* <div className="text-sm font-light">more actions</div> */}
             </DialogHeader>
+            <Separator />
+            <div className="flex flex-row bg-red-200">
+              <div className="flex-1">main</div>
+              <div className="bg-orange-100/50 min-w-[300px]">Side</div>
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -120,4 +132,4 @@ const EditTask = ({ task, user }: Props) => {
   );
 };
 
-export default EditTask;
+export default CurrentTask;

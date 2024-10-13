@@ -30,6 +30,7 @@ import AddTask from "@/components/form/add-task";
 import MoreOptions from "./more-options";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Separator } from "@/components/ui/separator";
+import TaskOverview from "./task-overview";
 
 type Props = {
   task: Task;
@@ -113,18 +114,8 @@ const CurrentTask = ({ task, user }: Props) => {
               <InboxIcon className="text-gray-500" size={12} />
             </div>
           </div>
-          <DialogContent className="w-full sm:max-w-4xl p-0 min-h-[80%]">
-            <DialogHeader className="flex px-4 py-2 flex-row items-center justify-between">
-              <div className="flex items-center space-x-1">
-                <Inbox className="w-4 h-4 opacity-50" /> inbox
-              </div>
-              {/* <div className="text-sm font-light">more actions</div> */}
-            </DialogHeader>
-            <Separator />
-            <div className="flex flex-row bg-red-200">
-              <div className="flex-1">main</div>
-              <div className="bg-orange-100/50 min-w-[300px]">Side</div>
-            </div>
+          <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] gap-0">
+            <TaskOverview user={user} task={task} />
           </DialogContent>
         </Dialog>
       )}

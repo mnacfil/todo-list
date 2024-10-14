@@ -3,6 +3,9 @@ import React from "react";
 
 type Props = {};
 
+const imgSrc =
+  "https://res.cloudinary.com/imagist/image/fetch/q_auto,f_auto,c_scale,w_2624/https%3A%2F%2Ftodoist.com%2Fstatic%2Fhome-teams%2Fintro%2Fwide%2Fheaderui.en.png";
+
 const Overview = (props: Props) => {
   return (
     <div className="h-5/6 flex items-center justify-center flex-col ">

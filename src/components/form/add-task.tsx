@@ -28,7 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { addTask, updateTask } from "@/app/(main-app)/(today)/action";
+import { addTask, updateTask } from "@/app/(main-app)/app/(today)/action";
 import { Task, User } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 import { usePathname } from "next/navigation";

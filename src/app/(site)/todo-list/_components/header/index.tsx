@@ -10,16 +10,14 @@ import { Ham, HamIcon, ListTodo, Menu } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import MobileHeader from "../mobile-header";
+import Logo from "@/components/global/logo";
 
 type Props = {};
 
 const Header = (props: Props) => {
   return (
     <div className="flex justify-between items-center py-5">
-      <div className="flex  gap-2 items-center">
-        <ListTodo />
-        todoist
-      </div>
+      <Logo />
       <MobileHeader />
       <div className="gap-3 items-center hidden lg:flex">
         <div className="flex gap-3 items-center">

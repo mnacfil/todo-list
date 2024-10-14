@@ -1,3 +1,4 @@
+import Logo from "@/components/global/logo";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -20,10 +21,7 @@ const MobileHeader = (props: Props) => {
         </DrawerTrigger>
         <DrawerContent>
           <div className="flex w-full items-center justify-between">
-            <div className="flex space-x-2 items-center">
-              <ListTodo />
-              todoist
-            </div>
+            <Logo />
             <X className="cursor-pinter" />
           </div>
           <DrawerFooter>

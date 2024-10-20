@@ -9,11 +9,11 @@ type Props = {
 
 const AuthLayout = ({ children }: Props) => {
   return (
-    <div className="w-full h-screen mx-auto max-w-6xl px-4 lg:px-0">
+    <div className="w-full h-screen mx-auto  px-6  max-w-6xl">
       <div className="flex flex-col w-full h-full">
         <Logo />
         <div className="flex-1 flex items-center justify-center">
-          <div className="h-3/5 w-full">
+          <div className="h-3/5 w-full max-w-4xl">
             <ClerkProvider>{children}</ClerkProvider>
           </div>
         </div>

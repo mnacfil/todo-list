@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:../../../../../test.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Task {
@@ -25,8 +25,11 @@ model Task {
 // labels model
 
 model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  name  String?
-  tasks Task[]
+  id        String  @id @default(uuid())
+  clerkId   String  @unique
+  email     String  @unique
+  firstname String
+  lastname  String
+  image     String?
+  tasks     Task[]
 }

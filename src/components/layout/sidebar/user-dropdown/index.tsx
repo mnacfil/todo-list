@@ -27,11 +27,15 @@ import {
   Star,
   User,
 } from "lucide-react";
-import DropdownItem from "@/components/global/dropdown-item";
+import { useClerk } from "@clerk/nextjs";
 
-type Props = {};
+export const UserDropdown = () => {
+  const { signOut } = useClerk();
 
-export const UserDropdown = (props: Props) => {
+  const onLogout = () => {
+    signOut({ redirectUrl: "/todo-list" });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -95,7 +99,7 @@ export const UserDropdown = (props: Props) => {
           <DropdownMenuShortcut>1 hour ago</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={onLogout}>
           <LogOutIcon className="mr-2 h-4 w-4" />
           <span>Logout</span>
           <DropdownMenuShortcut>a</DropdownMenuShortcut>

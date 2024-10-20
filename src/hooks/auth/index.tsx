@@ -3,7 +3,7 @@
 import { onSignUpUser } from "@/actions/auth";
 import { OtpSchema } from "@/app/(auth)/sign-up/_components/otp";
 import { SignUpSchema } from "@/components/form/sign-up/schema";
-import { useSignUp } from "@clerk/nextjs";
+import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
-import { ClerkAPIError } from "@clerk/types";
+import { ClerkAPIError, OAuthStrategy } from "@clerk/types";
+import { LoginSchema } from "@/components/form/login/schema";
 
 export const useAuthSignUp = () => {
   const { isLoaded, setActive, signUp } = useSignUp();
@@ -100,8 +101,14 @@ export const useAuthSignUp = () => {
     } catch (error) {
       if (isClerkAPIResponseError(error)) {
         setErrors(error.errors);
+      } else {
+        setErrors(error as any);
       }
       console.error("Error:", JSON.stringify(error, null, 2));
+    } finally {
+      signupform.reset();
+      otpform.reset();
+      setCreating(false);
     }
   };
 
@@ -116,4 +123,78 @@ export const useAuthSignUp = () => {
   };
 };
 
-export const useAuthLogin = () => {};
+export const useAuthLogin = () => {
+  const { isLoaded, setActive, signIn } = useSignIn();
+  const [errors, setErrors] = useState<ClerkAPIError[]>();
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    mode: "onSubmit",
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    if (!isLoaded) return;
+    setErrors(undefined);
+    try {
+      const signInAttemp = await signIn.create({
+        identifier: values.email,
+        password: values.password,
+      });
+      if (signInAttemp.status !== "complete") {
+        toast("Error", {
+          description:
+            "Something went wrong logging in, Please try again later",
+        });
+        return;
+      }
+      await setActive({ session: signInAttemp.createdSessionId });
+      toast("Success", {
+        description: "Welcome back",
+      });
+      router.push("/app");
+    } catch (error) {
+      if (isClerkAPIResponseError(error)) {
+        setErrors(error.errors);
+      } else {
+        setErrors(error as any);
+      }
+      console.error(JSON.stringify(error, null, 2));
+    }
+  };
+
+  return {
+    form,
+    errors,
+    onSubmit,
+  };
+};
+
+export const useAuthGoogle = () => {
+  const { signIn } = useSignIn();
+  const { signUp } = useSignUp();
+
+  if (!signIn || !signUp) return;
+
+  const signInWith = (strategy: OAuthStrategy) => {
+    return signIn.authenticateWithRedirect({
+      strategy,
+      redirectUrl: "/sso-callback",
+      redirectUrlComplete: "/app",
+    });
+  };
+
+  const signUpWith = (strategy: OAuthStrategy) => {
+    return signUp?.authenticateWithRedirect({
+      strategy,
+      redirectUrl: "/sso-callback",
+      redirectUrlComplete: "/sso-callback/sign-up-complete",
+    });
+  };
+
+  return { signInWith, signUpWith };
+};

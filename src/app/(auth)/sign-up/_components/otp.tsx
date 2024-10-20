@@ -21,7 +21,7 @@ import { z } from "zod";
 type Props = {
   authOtp: Pick<
     ReturnType<typeof useAuthSignUp>,
-    "onVerify" | "otpform" | "creating"
+    "onVerify" | "otpform" | "creating" | "errors"
   >;
 };
 
@@ -31,14 +31,15 @@ export const OtpSchema = z.object({
     .min(6, { message: "Your one-time password must be 6 characters" }),
 });
 
-const Otp = ({ authOtp }: Props) => {
-  const { otpform, creating, onVerify } = authOtp;
+const OtpForm = ({ authOtp }: Props) => {
+  const { otpform, creating, errors, onVerify } = authOtp;
+
   return (
     <div className="h-full flex justify-center ">
       <Form {...otpform}>
         <form
           onSubmit={otpform.handleSubmit(onVerify)}
-          className="flex justify-center flex-col"
+          className="flex justify-center flex-col gap-2"
         >
           <FormField
             control={otpform.control}
@@ -61,7 +62,9 @@ const Otp = ({ authOtp }: Props) => {
                 <FormDescription>
                   Please enter the one-time password sent to your email.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage>
+                  {(errors && errors[0]?.longMessage) || ""}
+                </FormMessage>
               </FormItem>
             )}
           />
@@ -74,4 +77,4 @@ const Otp = ({ authOtp }: Props) => {
   );
 };
 
-export default Otp;
+export default OtpForm;

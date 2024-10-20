@@ -34,3 +34,29 @@ export const onSignUpUser = async (params: SignUpParams) => {
     };
   }
 };
+
+export const onAuthenticateUser = async (id: string) => {
+  try {
+    const user = await db.user.findUnique({
+      where: { clerkId: id },
+    });
+    if (user) {
+      return {
+        status: 200,
+        data: user,
+        message: "Successfull",
+      };
+    }
+    return {
+      status: 404,
+      data: null,
+      message: "No User found",
+    };
+  } catch (error) {
+    return {
+      status: 404,
+      data: null,
+      message: "No User found",
+    };
+  }
+};

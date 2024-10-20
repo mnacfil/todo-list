@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
 import React from "react";
 
@@ -7,14 +8,16 @@ type Props = {
 
 const Provider = ({ children }: Props) => {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      {children}
-    </ThemeProvider>
+    <ClerkProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    </ClerkProvider>
   );
 };
 

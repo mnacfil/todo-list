@@ -19,12 +19,12 @@ import { Button } from "@/components/ui/button";
 type Props = {
   authSignup: Pick<
     ReturnType<typeof useAuthSignUp>,
-    "onSubmit" | "signupform" | "verifying"
+    "onSubmit" | "signupform" | "verifying" | "errors"
   >;
 };
 
 const SignUpForm = ({ authSignup }: Props) => {
-  const { signupform, verifying, onSubmit } = authSignup;
+  const { signupform, errors, verifying, onSubmit } = authSignup;
 
   return (
     <Form {...signupform}>
@@ -85,13 +85,15 @@ const SignUpForm = ({ authSignup }: Props) => {
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {(errors && errors[0]?.longMessage) || ""}
+              </FormMessage>
             </FormItem>
           )}
         />
         {}
-        <Button type="submit" className="w-full h-12">
-          Sign up with email
+        <Button type="submit" className="w-full h-12" disabled={verifying}>
+          {verifying ? "loading..." : "Sign up with email"}
         </Button>
       </form>
     </Form>

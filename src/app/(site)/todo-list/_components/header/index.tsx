@@ -48,7 +48,7 @@ const Header = (props: Props) => {
         </div>
         <Separator orientation="vertical" className="mx-3" color="red" />
         <div className="flex gap-2 items-center">
-          <p>Login</p>
+          <Link href="/login">Log in</Link>
           <Button type="button">Start for free</Button>
         </div>
       </div>

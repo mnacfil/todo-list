@@ -1,6 +1,10 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+// Todo protect all routes insite main-app group
+const isProtectedRoute = createRouteMatcher(["app(.*)"]);
 
-export default clerkMiddleware();
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) auth().protect();
+});
 
 export const config = {
   matcher: [

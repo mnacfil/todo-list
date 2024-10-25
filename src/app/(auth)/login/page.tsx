@@ -1,7 +1,5 @@
 import LoginForm from "@/components/form/login";
 import GoogleAuthButton from "@/components/global/google-auth-button";
-import { Google } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@radix-ui/react-separator";
 import Image from "next/image";
 import Link from "next/link";

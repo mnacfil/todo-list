@@ -1,5 +1,5 @@
 import React from "react";
-import Overview from "./_components/overview-section";
+import Overview from "../_components/overview-section";
 
 type Props = {};
 

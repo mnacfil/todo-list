@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import TaskOverview from "./task-overview";
 
 type Props = {
-  task: Task;
+  task: any;
   user: User;
 };
 

@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(uuid())
+  clerkId   String    @unique
+  email     String    @unique
+  firstname String
+  lastname  String
+  image     String?
+  tasks     Task[]
+  SubTask   SubTask[]
+}
+
 model Task {
   id          String    @id @default(uuid())
   createdAt   DateTime  @default(now())
@@ -19,17 +30,27 @@ model Task {
   priority    String?
   reminder    String?
   labels      String?
+  subTasks    SubTask[]
 }
 
 // Project model
 // labels model
+// SubTask
 
-model User {
-  id        String  @id @default(uuid())
-  clerkId   String  @unique
-  email     String  @unique
-  firstname String
-  lastname  String
-  image     String?
-  tasks     Task[]
+model SubTask {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  title       String
+  author      User      @relation(fields: [authorId], references: [id])
+  task        Task      @relation(fields: [taskId], references: [id])
+  taskId      String
+  authorId    String
+  description String?
+  dueDate     DateTime?
+  priority    String?
+  reminder    String?
+  labels      String?
 }
+
+// Comment

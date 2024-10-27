@@ -9,7 +9,7 @@ import TaskOverviewForm from "@/components/form/task-overview";
 
 type Props = {
   user: User;
-  task: Task;
+  task: any;
 };
 
 const TaskOverview = ({ user, task }: Props) => {

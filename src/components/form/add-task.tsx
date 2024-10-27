@@ -60,6 +60,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { addSubTask } from "@/actions/task";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -73,11 +74,18 @@ type Props = {
   isEditing?: boolean;
   currentTask?: Task;
   onCancel?: () => void;
+  isAddingSubTask?: boolean;
 };
 
 type TaskPriority = "p1" | "p2" | "p3" | "p4";
 
-const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
+const AddTask = ({
+  isEditing = false,
+  user,
+  currentTask,
+  onCancel,
+  isAddingSubTask = false,
+}: Props) => {
   const { toast } = useToast();
   const pathname = usePathname();
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("p4");
@@ -111,7 +119,24 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           });
           onCancel && onCancel();
         }
-      } else {
+      }
+      if (isAddingSubTask) {
+        const res = await addSubTask({
+          data: {
+            title: values.title,
+            description: values.description,
+            authorId: user.id,
+            taskId: currentTask?.id as string,
+          },
+          pathname,
+        });
+        if (res.status === 201) {
+          toast({
+            title: res.message,
+          });
+        }
+      }
+      if (!isEditing && !isAddingSubTask) {
         const response = await addTask({
           title: values.title,
           description: values.description,
@@ -119,13 +144,11 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
           user,
           pathname,
         });
-
         if (response) {
           toast({
             title: "Success",
             description: "Task added on you list.",
           });
-          form.reset();
         }
       }
     } catch (error) {
@@ -135,6 +158,8 @@ const AddTask = ({ isEditing = false, user, currentTask, onCancel }: Props) => {
         description: "There was a problem with your request.",
         variant: "destructive",
       });
+    } finally {
+      form.reset();
     }
   };
 

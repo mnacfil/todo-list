@@ -11,7 +11,6 @@ type Props = {};
 
 const TodayPage = async (props: Props) => {
   const user = await getCurrentUser();
-  console.log(user);
 
   if (!user) {
     redirect("/login");

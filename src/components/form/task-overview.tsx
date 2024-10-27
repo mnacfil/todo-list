@@ -34,6 +34,10 @@ import { ChevronDown, Paperclip, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import AddTask from "./add-task";
+import ToggleAddTask from "@/app/(main-app)/app/(today)/_components/toggle-add-task";
+import { updateTask } from "@/app/(main-app)/app/(today)/action";
+import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {
   user: User;
@@ -52,6 +56,8 @@ const TaskOverviewForm = ({ user, task }: Props) => {
   const [isFocus, setIsFocus] = useState(false);
   const [isComment, setIsComment] = useState(false);
   const [isAddingSubTask, setIsAddingSubTask] = useState(false);
+  const [showSubTasks, setShowSubTasks] = useState(true);
+  const pathname = usePathname();
   const ref = useRef<HTMLDivElement | null>(null);
 
   const form = useForm<z.infer<typeof schema>>({
@@ -74,15 +80,26 @@ const TaskOverviewForm = ({ user, task }: Props) => {
   };
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    // try {
-    //   const res = await addSubTask(task.id, {
-    //     title: values.title
-    //   });
-    // } catch (error) {
-    //   toast("Error", {
-    //     description: "Error while adding subTask"
-    //   })
-    // }
+    console.log("hello world");
+    try {
+      await updateTask({
+        taskId: task.id,
+        newTask: {
+          ...task,
+          title: values.title,
+          description: values.description,
+          priority: values.priority,
+        },
+        pathname: pathname,
+      });
+      toast("Success", {
+        description: "Task updated",
+      });
+    } catch (error) {
+      toast("Error", {
+        description: "Error while adding subTask",
+      });
+    }
   };
 
   return (
@@ -178,52 +195,86 @@ const TaskOverviewForm = ({ user, task }: Props) => {
               <div></div>
             </form>
           </Form>
-          {task.subTasks.length > 0 ? (
+          {task.subTasks.length > 0 && (
             <>
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 cursor-pointer">
                 <ChevronDown />
-                <p>
-                  Sub-tasks <span>0/1</span>
-                </p>
-              </div>
-              <div>
-                {task.subTasks.map((subTask: SubTask) => (
-                  <p key={subTask.id}>{subTask.title}</p>
-                ))}
+                <div className="flex-1">
+                  <p onClick={() => setShowSubTasks((prev) => !prev)}>
+                    Sub-tasks <span>0/{task.subTasks.length}</span>
+                  </p>
+                  <Separator className="mt-2" />
+                  {showSubTasks && (
+                    <div className="divide-y flex flex-col">
+                      {task.subTasks.map((subTask: SubTask) => (
+                        <div
+                          key={subTask.id}
+                          className="flex items-center gap-2 py-2"
+                        >
+                          <Checkbox className="rounded-full w-4 h-4 opacity-50" />
+                          <h4>{subTask.title}</h4>
+                        </div>
+                      ))}
+                      <Separator className="mb-2" />
+                    </div>
+                  )}
+                  <ToggleAddTask
+                    user={user}
+                    isAddingSubTask={true}
+                    currentTask={task}
+                  />
+                  {isComment ? (
+                    <Card>Add coment here</Card>
+                  ) : (
+                    <div className="flex items-center space-x-2 my-5">
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>MN</AvatarFallback>
+                      </Avatar>
+                      <div className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50">
+                        <span className="text-sm">Comment</span>
+                        <Paperclip className="w-4 h-4 opacity-50" />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
-          ) : null}
-          {isAddingSubTask ? (
-            <AddTask
-              user={user}
-              onCancel={onCancelSubTask}
-              isAddingSubTask={isAddingSubTask}
-              currentTask={task}
-            />
-          ) : (
-            <div
-              className="flex items-center space-x-1 rounded-sm p-1 hover:bg-gray-50 w-max"
-              onClick={onAddSubTask}
-            >
-              <Plus className="w-4 h-4 opacity-50" />
-              <span className="text-xs text-gray-500">Add sub-task</span>
-            </div>
           )}
-          <Separator className="my-3" />
-          {isComment ? (
-            <Card>Add coment here</Card>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>MN</AvatarFallback>
-              </Avatar>
-              <div className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50">
-                <span className="text-sm">Comment</span>
-                <Paperclip className="w-4 h-4 opacity-50" />
-              </div>
-            </div>
-          )}
+          {task.subTasks.length === 0 &&
+            (isAddingSubTask ? (
+              <AddTask
+                user={user}
+                onCancel={onCancelSubTask}
+                isAddingSubTask={isAddingSubTask}
+                currentTask={task}
+              />
+            ) : (
+              <>
+                <div
+                  className="flex items-center space-x-1 rounded-sm p-1 hover:bg-gray-50 w-max"
+                  onClick={onAddSubTask}
+                >
+                  <Plus className="w-4 h-4 opacity-50" />
+                  <span className="text-xs text-gray-500">Add sub-task</span>
+                </div>
+                <Separator className="my-3" />
+                {isComment ? (
+                  <Card>Add coment here</Card>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>MN</AvatarFallback>
+                    </Avatar>
+                    <div className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50">
+                      <span className="text-sm">Comment</span>
+                      <Paperclip className="w-4 h-4 opacity-50" />
+                    </div>
+                  </div>
+                )}
+              </>
+            ))}
         </div>
       </div>
     </>

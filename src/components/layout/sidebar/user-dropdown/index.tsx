@@ -33,7 +33,7 @@ export const UserDropdown = () => {
   const { signOut } = useClerk();
 
   const onLogout = () => {
-    signOut({ redirectUrl: "/todo-list" });
+    signOut({ redirectUrl: "/" });
   };
 
   return (

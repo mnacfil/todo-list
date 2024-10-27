@@ -7,9 +7,15 @@ import React, { useState } from "react";
 
 type Props = {
   user: User;
+  isAddingSubTask?: boolean;
+  currentTask?: any;
 };
 
-const ToggleAddTask = ({ user }: Props) => {
+const ToggleAddTask = ({
+  user,
+  isAddingSubTask = false,
+  currentTask,
+}: Props) => {
   const [isAddingTask, setIsAddingTask] = useState(false);
 
   const openAddTaskForm = () => setIsAddingTask(true);
@@ -18,7 +24,12 @@ const ToggleAddTask = ({ user }: Props) => {
   return (
     <>
       {isAddingTask ? (
-        <AddTask user={user} onCancel={closeAddTaskForm} />
+        <AddTask
+          user={user}
+          onCancel={closeAddTaskForm}
+          isAddingSubTask={isAddingSubTask}
+          currentTask={currentTask}
+        />
       ) : (
         <div
           className="flex items-center gap-1 cursor-pointer group"

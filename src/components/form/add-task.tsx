@@ -60,6 +60,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { createSubTask, createTask, updateTask } from "@/actions/task";
+import { toast } from "sonner";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -85,7 +86,6 @@ const AddTask = ({
   onCancel,
   isAddingSubTask = false,
 }: Props) => {
-  const { toast } = useToast();
   const pathname = usePathname();
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("p4");
 
@@ -106,17 +106,25 @@ const AddTask = ({
     try {
       if (isEditing) {
         if (currentTask?.id) {
-          await updateTask({
+          const res = await updateTask({
             taskId: currentTask.id,
             newTask: {
-              ...currentTask,
               title: values.title,
               description: values.description,
               priority: values.priority,
             },
             pathname: pathname,
           });
-          onCancel && onCancel();
+          if (res.status === 200) {
+            toast("Success", {
+              description: res.message,
+            });
+            onCancel && onCancel();
+          } else {
+            toast("Error", {
+              description: res.message,
+            });
+          }
         }
       }
       if (isAddingSubTask) {
@@ -130,32 +138,40 @@ const AddTask = ({
           pathname,
         });
         if (res.status === 201) {
-          toast({
-            title: res.message,
+          toast("Success", {
+            description: res.message,
+          });
+        } else {
+          toast("Error", {
+            description: res.message,
           });
         }
       }
       if (!isEditing && !isAddingSubTask) {
-        const response = await createTask({
+        const res = await createTask({
           title: values.title,
           description: values.description,
-          priority: values.priority,
+          priority: "P1",
           userId,
           pathname,
         });
-        if (response) {
-          toast({
-            title: "Success",
-            description: "Task added on you list.",
+
+        console.log(res);
+
+        if (res.status === 201) {
+          toast("Success", {
+            description: res.message,
+          });
+        } else {
+          toast("Error", {
+            description: res.message,
           });
         }
       }
     } catch (error) {
       console.log(error);
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-        variant: "destructive",
+      toast("Error", {
+        description: "Something went wrong. Please try again later.",
       });
     } finally {
       form.reset();

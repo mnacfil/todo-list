@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { Prisma, User } from "@prisma/client";
 import { CreateUserParams } from "./types";
 
 export const createUser = async (data: CreateUserParams) => {

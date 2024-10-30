@@ -31,8 +31,6 @@ model Task {
   reminder    String?
   labels      String?
   subTasks    SubTask[]
-
-  @@unique([authorId])
 }
 
 // Project model
@@ -53,8 +51,6 @@ model SubTask {
   priority    String?
   reminder    String?
   labels      String?
-
-  @@unique([taskId, authorId])
 }
 
 // Comment

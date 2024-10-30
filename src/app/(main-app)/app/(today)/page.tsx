@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { CircleCheckBigIcon } from "lucide-react";
-import { getAllTasks } from "@/actions/task";
+import { getUserTasks } from "@/actions/task";
 import { currentUser } from "@clerk/nextjs/server";
 import ToggleAddTask from "@/components/global/toggle-add-task";
 import Task from "@/components/global/task";
@@ -11,7 +11,7 @@ const TodayPage = async () => {
   if (!user) {
     redirect("/login");
   }
-  const res = await getAllTasks(user.id);
+  const res = await getUserTasks(user.id);
 
   return (
     <>

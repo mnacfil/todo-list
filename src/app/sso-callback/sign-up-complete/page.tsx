@@ -1,11 +1,11 @@
-import { onSignUpUser } from "@/actions/auth";
+import { createUser } from "@/actions/auth";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 const SSOCallbackSignUp = async () => {
   const user = await currentUser();
   if (!user) redirect("/sign-up");
-  const res = await onSignUpUser({
+  const res = await createUser({
     clerkId: user.id,
     email: user.emailAddresses[0].emailAddress,
     firstname: user.firstName ?? "",

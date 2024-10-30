@@ -16,6 +16,6 @@ export type DeleteTaskParams = {
 
 export type UpdateTaskParams = {
   taskId: string;
-  newTask: Task;
+  newTask: Partial<Task>;
   pathname: string;
 };

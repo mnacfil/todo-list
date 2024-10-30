@@ -184,7 +184,7 @@ export const useAuthGoogle = () => {
     return signIn.authenticateWithRedirect({
       strategy,
       redirectUrl: "/sso-callback",
-      redirectUrlComplete: "/app",
+      redirectUrlComplete: "/login-complete",
     });
   };
 

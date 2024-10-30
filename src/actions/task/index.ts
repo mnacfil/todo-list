@@ -4,12 +4,18 @@ import { prisma } from "@/lib/db";
 import { SubTask } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./types";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
-export const getAllTasks = async (id: string) => {
+export const getUserTasks = async (id: string) => {
   try {
     const tasks = await prisma.task.findMany({
       where: {
-        authorId: id,
+        author: {
+          clerkId: id,
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
       },
       include: {
         author: true,
@@ -75,20 +81,50 @@ export const createTask = async ({
   description,
   pathname,
 }: AddTaskParams) => {
-  const task = await prisma.task.create({
-    data: {
-      title,
-      description,
-      priority,
-      author: {
-        connect: {
-          id: userId,
+  try {
+    const task = await prisma.task.create({
+      data: {
+        title,
+        description,
+        priority,
+        author: {
+          connect: {
+            clerkId: userId,
+          },
         },
       },
-    },
-  });
-  revalidatePath(pathname);
-  return task;
+    });
+    console.log(task);
+
+    if (task) {
+      revalidatePath(pathname);
+      return {
+        status: 201,
+        data: task,
+        message: "Task added on your list.",
+      };
+    } else {
+      return {
+        status: 400,
+        data: null,
+        message: "Task could not be created.",
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        status: error.code,
+        data: null,
+        message: error.message,
+      };
+    }
+    return {
+      status: 400,
+      data: null,
+      message: "Something went wrong, Please try again later.",
+    };
+  }
 };
 
 export const deleteTask = async ({ taskId, pathname }: DeleteTaskParams) => {
@@ -106,12 +142,32 @@ export const updateTask = async ({
   newTask,
   pathname,
 }: UpdateTaskParams) => {
-  const updatedTask = await prisma.task.update({
-    where: { id: taskId },
-    data: { ...newTask },
-  });
-  revalidatePath(pathname);
-  return updatedTask;
+  try {
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
+      data: { ...newTask },
+    });
+    revalidatePath(pathname);
+    return {
+      status: 200,
+      data: updatedTask,
+      message: "Task has been updated successfully.",
+    };
+  } catch (error) {
+    console.log(error);
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        status: error.code,
+        data: null,
+        message: error.message,
+      };
+    }
+    return {
+      status: 400,
+      data: null,
+      message: "Something went wrong, Please try again later.",
+    };
+  }
 };
 
 export const getCurrentUser = async () => {

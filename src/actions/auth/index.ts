@@ -1,17 +1,14 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { SignUpParams } from "./types";
+import { prisma } from "@/lib/db";
+import { Prisma, User } from "@prisma/client";
+import { CreateUserParams } from "./types";
 
-export const onSignUpUser = async (params: SignUpParams) => {
-  const { clerkId, email, firstname, lastname } = params;
+export const createUser = async (data: CreateUserParams) => {
   try {
-    const user = await db.user.create({
+    const user = await prisma.user.create({
       data: {
-        email,
-        clerkId,
-        firstname,
-        lastname,
+        ...data,
       },
     });
     if (user) {
@@ -35,9 +32,9 @@ export const onSignUpUser = async (params: SignUpParams) => {
   }
 };
 
-export const onAuthenticateUser = async (id: string) => {
+export const authenticateUser = async (id: string) => {
   try {
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { clerkId: id },
     });
     if (user) {

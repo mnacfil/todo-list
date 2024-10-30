@@ -1,6 +1,6 @@
 "use client";
 
-import { onSignUpUser } from "@/actions/auth";
+import { createUser } from "@/actions/auth";
 import { OtpSchema } from "@/app/(auth)/sign-up/_components/otp";
 import { SignUpSchema } from "@/components/form/sign-up/schema";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
@@ -83,7 +83,7 @@ export const useAuthSignUp = () => {
         return;
       }
       if (attempVerification.status === "complete") {
-        const user = await onSignUpUser({
+        const user = await createUser({
           firstname: signupform.getValues("firstName"),
           lastname: signupform.getValues("lastName"),
           email: signupform.getValues("email"),

@@ -1,11 +1,11 @@
-import { Task, User } from "@prisma/client";
+import { Task } from "@prisma/client";
 
 export type AddTaskParams = {
   title: string;
   description?: string;
   priority?: string;
   dueDate?: Date;
-  user: User;
+  userId: string;
   pathname: string;
 };
 

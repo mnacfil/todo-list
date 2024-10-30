@@ -1,16 +1,12 @@
-import React from "react";
-
-import { getCurrentUser } from "./action";
 import { redirect } from "next/navigation";
-import Task from "./_components/task";
 import { CircleCheckBigIcon } from "lucide-react";
-import ToggleAddTask from "./_components/toggle-add-task";
 import { getAllTasks } from "@/actions/task";
+import { currentUser } from "@clerk/nextjs/server";
+import ToggleAddTask from "@/components/global/toggle-add-task";
+import Task from "@/components/global/task";
 
-type Props = {};
-
-const TodayPage = async (props: Props) => {
-  const user = await getCurrentUser();
+const TodayPage = async () => {
+  const user = await currentUser();
 
   if (!user) {
     redirect("/login");
@@ -29,11 +25,11 @@ const TodayPage = async (props: Props) => {
       {res.data && res.data.length > 0 ? (
         <div className="flex w-full gap-4 flex-col divide-y divide-slate-100 mt-6">
           {res.data.map((task) => (
-            <Task key={task.id} task={task} user={user} />
+            <Task key={task.id} task={task} userId={user.id} />
           ))}
         </div>
       ) : null}
-      <ToggleAddTask user={user} />
+      <ToggleAddTask userId={user.id} />
       {res.data && res.data.length === 0 ? (
         <div className="flex items-center justify-center flex-col min-h-60">
           <h2 className="text-md">Your peace of mind is priceless</h2>

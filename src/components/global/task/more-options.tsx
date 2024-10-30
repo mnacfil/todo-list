@@ -34,7 +34,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { addTask, deleteTask, getCurrentUser } from "../action";
 import { usePathname } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { dueDates, priorities } from "@/components/constants";
@@ -44,14 +43,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { createTask, deleteTask } from "@/actions/task";
 
 type Props = {
   task: Task;
-  user: User;
+  userId: string;
   onClickEdit: () => void;
 };
 
-const MoreOptions = ({ task, user, onClickEdit }: Props) => {
+const MoreOptions = ({ task, userId, onClickEdit }: Props) => {
   const pathname = usePathname();
 
   const activePriority = "P4";
@@ -62,11 +62,11 @@ const MoreOptions = ({ task, user, onClickEdit }: Props) => {
 
   const handleDuplicateTask = async () => {
     try {
-      const res = await addTask({
+      const res = await createTask({
         title: task.title,
         description: task?.description ? task.description : "",
         pathname,
-        user,
+        userId,
       });
       if (res.id) {
         toast({

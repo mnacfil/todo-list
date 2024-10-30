@@ -4,9 +4,7 @@ import { Separator } from "@radix-ui/react-separator";
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {};
-
-const Login = (props: Props) => {
+const Login = () => {
   return (
     <>
       <h1 className="text-3xl font-semibold mb-5">Log in</h1>

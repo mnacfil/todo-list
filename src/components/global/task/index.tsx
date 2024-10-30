@@ -1,49 +1,26 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Prisma, Task, User } from "@prisma/client";
-import {
-  Calendar,
-  DiscIcon,
-  Edit2,
-  Ellipsis,
-  Inbox,
-  InboxIcon,
-  MessageSquare,
-  TableIcon,
-} from "lucide-react";
+import { Calendar, Edit2, InboxIcon, MessageSquare } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
-import { addTask, deleteTask, updateTask } from "../action";
-import { toast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import AddTask from "@/components/form/add-task";
-import MoreOptions from "./more-options";
 import { CheckedState } from "@radix-ui/react-checkbox";
-import { Separator } from "@/components/ui/separator";
-import TaskOverview from "./task-overview";
+import MoreOptions from "./more-options";
+import TaskDialog from "./task-dialog";
 
 type Props = {
   task: any;
-  user: User;
+  userId: string;
 };
 
-const CurrentTask = ({ task, user }: Props) => {
+const Task = ({ task, userId }: Props) => {
   const pathname = usePathname();
   const [isEditing, setIsEditing] = useState(false);
 
   const handleCheckTask = async (e: CheckedState) => {
-    console.log(e.valueOf());
-
     // const deletedTask = await deleteTask({ taskId: task.id, pathname });
     // toast({
     //   title: "1 task completed",
@@ -67,7 +44,7 @@ const CurrentTask = ({ task, user }: Props) => {
     <>
       {isEditing ? (
         <AddTask
-          user={user}
+          userId={userId}
           currentTask={task}
           isEditing={isEditing}
           onCancel={handleCancelEdit}
@@ -104,7 +81,7 @@ const CurrentTask = ({ task, user }: Props) => {
                 <MessageSquare className="text-gray-400" size={16} />
                 <MoreOptions
                   task={task}
-                  user={user}
+                  userId={userId}
                   onClickEdit={handleShowAddTaskForm}
                 />
               </div>
@@ -115,7 +92,7 @@ const CurrentTask = ({ task, user }: Props) => {
             </div>
           </div>
           <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] gap-0">
-            <TaskOverview user={user} task={task} />
+            <TaskDialog userId={userId} task={task} />
           </DialogContent>
         </Dialog>
       )}
@@ -123,4 +100,4 @@ const CurrentTask = ({ task, user }: Props) => {
   );
 };
 
-export default CurrentTask;
+export default Task;

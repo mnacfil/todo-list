@@ -28,7 +28,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { addTask, updateTask } from "@/app/(main-app)/app/(today)/action";
 import { Task, User } from "@prisma/client";
 import { useToast } from "../ui/use-toast";
 import { usePathname } from "next/navigation";
@@ -60,7 +59,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { addSubTask } from "@/actions/task";
+import { createSubTask, createTask, updateTask } from "@/actions/task";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -70,7 +69,7 @@ const schema = z.object({
 });
 
 type Props = {
-  user: User;
+  userId: string;
   isEditing?: boolean;
   currentTask?: Task;
   onCancel?: () => void;
@@ -81,7 +80,7 @@ type TaskPriority = "p1" | "p2" | "p3" | "p4";
 
 const AddTask = ({
   isEditing = false,
-  user,
+  userId,
   currentTask,
   onCancel,
   isAddingSubTask = false,
@@ -121,11 +120,11 @@ const AddTask = ({
         }
       }
       if (isAddingSubTask) {
-        const res = await addSubTask({
+        const res = await createSubTask({
           data: {
             title: values.title,
             description: values.description,
-            authorId: user.id,
+            authorId: userId,
             taskId: currentTask?.id as string,
           },
           pathname,
@@ -137,11 +136,11 @@ const AddTask = ({
         }
       }
       if (!isEditing && !isAddingSubTask) {
-        const response = await addTask({
+        const response = await createTask({
           title: values.title,
           description: values.description,
           priority: values.priority,
-          user,
+          userId,
           pathname,
         });
         if (response) {

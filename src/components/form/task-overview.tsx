@@ -34,13 +34,13 @@ import { ChevronDown, Paperclip, Plus } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import AddTask from "./add-task";
-import ToggleAddTask from "@/app/(main-app)/app/(today)/_components/toggle-add-task";
-import { updateTask } from "@/app/(main-app)/app/(today)/action";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import ToggleAddTask from "../global/toggle-add-task";
+import { updateTask } from "@/actions/task";
 
 type Props = {
-  user: User;
+  userId: string;
   task: any;
 };
 
@@ -51,7 +51,7 @@ const schema = z.object({
   priority: z.string(),
 });
 
-const TaskOverviewForm = ({ user, task }: Props) => {
+const TaskOverviewForm = ({ userId, task }: Props) => {
   // const [isChecked, isChecked] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isComment, setIsComment] = useState(false);
@@ -219,7 +219,7 @@ const TaskOverviewForm = ({ user, task }: Props) => {
                     </div>
                   )}
                   <ToggleAddTask
-                    user={user}
+                    userId={userId}
                     isAddingSubTask={true}
                     currentTask={task}
                   />
@@ -244,7 +244,7 @@ const TaskOverviewForm = ({ user, task }: Props) => {
           {task.subTasks.length === 0 &&
             (isAddingSubTask ? (
               <AddTask
-                user={user}
+                userId={userId}
                 onCancel={onCancelSubTask}
                 isAddingSubTask={isAddingSubTask}
                 currentTask={task}

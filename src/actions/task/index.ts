@@ -1,12 +1,13 @@
 "use server";
 
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { SubTask } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./types";
 
 export const getAllTasks = async (id: string) => {
   try {
-    const tasks = await db.task.findMany({
+    const tasks = await prisma.task.findMany({
       where: {
         authorId: id,
       },
@@ -36,7 +37,7 @@ export const getAllTasks = async (id: string) => {
   }
 };
 
-export const addSubTask = async ({
+export const createSubTask = async ({
   data,
   pathname,
 }: {
@@ -44,7 +45,7 @@ export const addSubTask = async ({
   pathname: string;
 }) => {
   try {
-    const subTask = await db.subTask.create({
+    const subTask = await prisma.subTask.create({
       data: {
         title: data.title,
         description: data.description,
@@ -65,4 +66,59 @@ export const addSubTask = async ({
       message: "Something went wrong, Please try again later.",
     };
   }
+};
+
+export const createTask = async ({
+  title,
+  userId,
+  priority,
+  description,
+  pathname,
+}: AddTaskParams) => {
+  const task = await prisma.task.create({
+    data: {
+      title,
+      description,
+      priority,
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+  revalidatePath(pathname);
+  return task;
+};
+
+export const deleteTask = async ({ taskId, pathname }: DeleteTaskParams) => {
+  const task = await prisma.task.delete({
+    where: {
+      id: taskId,
+    },
+  });
+  revalidatePath(pathname);
+  return task;
+};
+
+export const updateTask = async ({
+  taskId,
+  newTask,
+  pathname,
+}: UpdateTaskParams) => {
+  const updatedTask = await prisma.task.update({
+    where: { id: taskId },
+    data: { ...newTask },
+  });
+  revalidatePath(pathname);
+  return updatedTask;
+};
+
+export const getCurrentUser = async () => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: "mnacfil@gmail.com",
+    },
+  });
+  return user;
 };

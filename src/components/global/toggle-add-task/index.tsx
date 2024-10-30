@@ -1,18 +1,17 @@
 "use client";
 
-import AddTask from "@/components/form/add-task";
-import { User } from "@prisma/client";
-import { PlusIcon } from "lucide-react";
 import React, { useState } from "react";
+import AddTask from "@/components/form/add-task";
+import { PlusIcon } from "lucide-react";
 
 type Props = {
-  user: User;
+  userId: string;
   isAddingSubTask?: boolean;
   currentTask?: any;
 };
 
 const ToggleAddTask = ({
-  user,
+  userId,
   isAddingSubTask = false,
   currentTask,
 }: Props) => {
@@ -25,7 +24,7 @@ const ToggleAddTask = ({
     <>
       {isAddingTask ? (
         <AddTask
-          user={user}
+          userId={userId}
           onCancel={closeAddTaskForm}
           isAddingSubTask={isAddingSubTask}
           currentTask={currentTask}

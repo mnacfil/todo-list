@@ -37,8 +37,8 @@ const Task = ({ task, userId }: Props) => {
     // });
   };
 
-  const handleCancelEdit = () => setIsEditing(false);
-  const handleShowAddTaskForm = () => setIsEditing(true);
+  const onCancelTask = () => setIsEditing(false);
+  const onEditTask = () => setIsEditing(true);
 
   return (
     <>
@@ -47,7 +47,7 @@ const Task = ({ task, userId }: Props) => {
           userId={userId}
           currentTask={task}
           isEditing={isEditing}
-          onCancel={handleCancelEdit}
+          onCancel={onCancelTask}
         />
       ) : (
         <Dialog>
@@ -75,14 +75,14 @@ const Task = ({ task, userId }: Props) => {
                 <Edit2
                   className="text-gray-400 hover:cursor-pointer hover:bg-gray-100 hover:text-gray-950"
                   size={16}
-                  onClick={handleShowAddTaskForm}
+                  onClick={onEditTask}
                 />
                 <Calendar className="text-gray-400" size={16} />
                 <MessageSquare className="text-gray-400" size={16} />
                 <MoreOptions
                   task={task}
                   userId={userId}
-                  onClickEdit={handleShowAddTaskForm}
+                  onClickEdit={onEditTask}
                 />
               </div>
             </div>

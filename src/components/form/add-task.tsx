@@ -61,6 +61,7 @@ import {
 } from "../ui/tooltip";
 import { createSubTask, createTask, updateTask } from "@/actions/task";
 import { toast } from "sonner";
+import { useTask } from "@/hooks/task";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -88,6 +89,7 @@ const AddTask = ({
 }: Props) => {
   const pathname = usePathname();
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("p4");
+  const { isPending, isUpdating, mutate, updateMutate } = useTask(userId);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -106,25 +108,10 @@ const AddTask = ({
     try {
       if (isEditing) {
         if (currentTask?.id) {
-          const res = await updateTask({
-            taskId: currentTask.id,
-            newTask: {
-              title: values.title,
-              description: values.description,
-              priority: values.priority,
-            },
-            pathname: pathname,
+          updateMutate({
+            id: currentTask?.id,
+            data: { ...values, author: { connect: { clerkId: userId } } },
           });
-          if (res.status === 200) {
-            toast("Success", {
-              description: res.message,
-            });
-            onCancel && onCancel();
-          } else {
-            toast("Error", {
-              description: res.message,
-            });
-          }
         }
       }
       if (isAddingSubTask) {
@@ -148,25 +135,16 @@ const AddTask = ({
         }
       }
       if (!isEditing && !isAddingSubTask) {
-        const res = await createTask({
+        mutate({
           title: values.title,
           description: values.description,
-          priority: "P1",
-          userId,
-          pathname,
+          priority: values.priority,
+          author: {
+            connect: {
+              clerkId: userId,
+            },
+          },
         });
-
-        console.log(res);
-
-        if (res.status === 201) {
-          toast("Success", {
-            description: res.message,
-          });
-        } else {
-          toast("Error", {
-            description: res.message,
-          });
-        }
       }
     } catch (error) {
       console.log(error);
@@ -398,6 +376,7 @@ const AddTask = ({
                   "bg-red-500": form.getValues("title").length > 0,
                 }
               )}`}
+              disabled={isPending}
             >
               {isEditing ? "Save" : "Add Task"}
             </Button>

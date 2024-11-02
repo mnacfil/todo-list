@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import AddTask from "@/components/form/add-task";
 import { PlusIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getUserTasks } from "@/actions/task";
 
 type Props = {
   userId: string;
@@ -19,6 +21,11 @@ const ToggleAddTask = ({
 
   const openAddTaskForm = () => setIsAddingTask(true);
   const closeAddTaskForm = () => setIsAddingTask(false);
+
+  // const query = useQuery({
+  //   queryKey: ["tasks"],
+  //   queryFn: () => getUserTasks(userId),
+  // });
 
   return (
     <>

@@ -34,8 +34,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { usePathname } from "next/navigation";
-import { toast } from "@/components/ui/use-toast";
 import { dueDates, priorities } from "@/components/constants";
 import {
   Tooltip,
@@ -43,7 +41,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { createTask, deleteTask } from "@/actions/task";
+import { useTask } from "@/hooks/task";
+import { toast } from "sonner";
 
 type Props = {
   task: Task;
@@ -52,33 +51,21 @@ type Props = {
 };
 
 const MoreOptions = ({ task, userId, onClickEdit }: Props) => {
-  const pathname = usePathname();
+  const { isDeleting, isPending, mutate, deleteMutate } = useTask(userId);
 
   const activePriority = "P4";
 
-  const handleDeleteTask = async () => {
-    await deleteTask({ taskId: task.id, pathname });
-  };
-
-  const handleDuplicateTask = async () => {
-    try {
-      const res = await createTask({
-        title: task.title,
-        description: task?.description ? task.description : "",
-        pathname,
-        userId,
-      });
-      if (res.id) {
-        toast({
-          title: "Task duplicated",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Something went wrong",
-        variant: "destructive",
-      });
-    }
+  const onDuplicateTask = async () => {
+    mutate({
+      title: task.title || "",
+      description: task?.description || "",
+      priority: task?.priority || "",
+      author: {
+        connect: {
+          clerkId: userId,
+        },
+      },
+    });
   };
 
   const handleSetPriority = async (priority: string) => {};
@@ -156,12 +143,12 @@ const MoreOptions = ({ task, userId, onClickEdit }: Props) => {
             <div className="flex flex-col pt-1">
               <ActionRow Icon={AlarmClock} title="Reminders" />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1" aria-disabled={isPending}>
               <ActionRow Icon={Grip} title="Move to..." endInfo="V" />
               <ActionRow
                 Icon={CopyPlus}
                 title="Duplicate"
-                onClick={handleDuplicateTask}
+                onClick={onDuplicateTask}
               />
               <ActionRow
                 Icon={Link}
@@ -198,7 +185,8 @@ const MoreOptions = ({ task, userId, onClickEdit }: Props) => {
                     </AlertDialogCancel>
                     <AlertDialogAction
                       className="bg-red-600/85 text-white hover:bg-red-600 text-[12px] px-3"
-                      onClick={handleDeleteTask}
+                      onClick={() => deleteMutate(task?.id)}
+                      disabled={isDeleting}
                     >
                       Continue
                     </AlertDialogAction>

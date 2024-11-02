@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { SubTask } from "@prisma/client";
+import { Prisma, SubTask } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { AddTaskParams, DeleteTaskParams, UpdateTaskParams } from "./types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const getUserTasks = async (id: string) => {
@@ -75,18 +74,16 @@ export const createSubTask = async ({
 };
 
 export const createTask = async ({
-  title,
+  data,
   userId,
-  priority,
-  description,
-  pathname,
-}: AddTaskParams) => {
+}: {
+  data: Prisma.TaskCreateInput;
+  userId: string;
+}) => {
   try {
     const task = await prisma.task.create({
       data: {
-        title,
-        description,
-        priority,
+        ...data,
         author: {
           connect: {
             clerkId: userId,
@@ -94,10 +91,8 @@ export const createTask = async ({
         },
       },
     });
-    console.log(task);
 
     if (task) {
-      revalidatePath(pathname);
       return {
         status: 201,
         data: task,
@@ -127,27 +122,45 @@ export const createTask = async ({
   }
 };
 
-export const deleteTask = async ({ taskId, pathname }: DeleteTaskParams) => {
-  const task = await prisma.task.delete({
-    where: {
-      id: taskId,
-    },
-  });
-  revalidatePath(pathname);
-  return task;
+export const deleteTask = async (id: string) => {
+  try {
+    const task = await prisma.task.delete({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      status: 200,
+      message: "Task has been removed succesfully.",
+    };
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      return {
+        status: error.code,
+        data: null,
+        message: error.message,
+      };
+    }
+    return {
+      status: 404,
+      message: "Task has been removed succesfully.",
+    };
+  }
 };
 
 export const updateTask = async ({
-  taskId,
-  newTask,
-  pathname,
-}: UpdateTaskParams) => {
+  id,
+  data,
+}: {
+  id: string;
+  data: Prisma.TaskCreateInput;
+}) => {
   try {
     const updatedTask = await prisma.task.update({
-      where: { id: taskId },
-      data: { ...newTask },
+      where: { id },
+      data: { ...data },
     });
-    revalidatePath(pathname);
     return {
       status: 200,
       data: updatedTask,

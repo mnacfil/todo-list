@@ -1,21 +1,40 @@
+import { getUserTasks } from "@/actions/task";
 import Sidebar from "@/components/layout/sidebar";
+import { appKeys } from "@/lib/react-query";
+import { currentUser } from "@clerk/nextjs/server";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const layout = ({ children }: Props) => {
+const AppLayout = async ({ children }: Props) => {
+  const queryClient = new QueryClient();
+  const user = await currentUser();
+  if (!user) redirect("/login");
+  queryClient.prefetchQuery({
+    queryKey: appKeys.getUserTask(user?.id),
+    queryFn: () => getUserTasks(user.id),
+  });
+
   return (
-    <main className="h-screen w-full flex">
-      <div className="w-[300px] h-screen bg-orange-50/50 hidden lg:block p-4">
-        <Sidebar />
-      </div>
-      <div className="flex-1 mx-auto max-w-screen-lg h-full py-10 px-14">
-        {children}
-      </div>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <main className="h-screen w-full flex">
+        <div className="w-[300px] h-screen bg-orange-50/50 hidden lg:block p-4">
+          <Sidebar />
+        </div>
+        <div className="flex-1 mx-auto max-w-screen-lg h-full py-10 px-14">
+          {children}
+        </div>
+      </main>
+    </HydrationBoundary>
   );
 };
 
-export default layout;
+export default AppLayout;

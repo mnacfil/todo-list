@@ -1,4 +1,9 @@
-import { createTask, deleteTask, updateTask } from "@/actions/task";
+import {
+  createSubTask,
+  createTask,
+  deleteTask,
+  updateTask,
+} from "@/actions/task";
 import { appKeys } from "@/lib/react-query";
 import { Prisma } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -150,5 +155,73 @@ export const useTask = (userId: string) => {
     mutate,
     deleteMutate,
     updateMutate,
+  };
+};
+
+export const useSubTask = (userId: string) => {
+  const queryClient = useQueryClient();
+  const { isPending: isCreatingSubtask, mutate: createSubTaskMutate } =
+    useMutation({
+      mutationFn: async ({
+        userId,
+        taskId,
+        data,
+      }: {
+        userId: string;
+        taskId: string;
+        data: Prisma.SubTaskCreateInput;
+      }) => {
+        return await createSubTask({ userId, taskId, data });
+      },
+      onMutate: (payload) => {
+        queryClient.cancelQueries({ queryKey: appKeys.getUserTask(userId) });
+
+        const previousTasks = queryClient.getQueryData<
+          Prisma.TaskCreateInput[]
+        >(appKeys.getUserTask(userId));
+
+        queryClient.setQueryData(appKeys.getUserTask(userId), (old: any) => ({
+          ...old,
+          ["data"]: old.data.map((task: Prisma.TaskCreateInput) =>
+            task.id === payload.taskId
+              ? {
+                  ...task,
+                  subTasks: [
+                    ...(task?.subTasks as Prisma.SubTaskCreateNestedManyWithoutTaskInput[]),
+                    payload.data,
+                  ],
+                }
+              : task
+          ),
+        }));
+
+        return { previousTasks };
+      },
+      onError: (error, payload, context) => {
+        queryClient.setQueryData(
+          appKeys.getUserTask(userId),
+          context?.previousTasks
+        );
+        console.log(error);
+      },
+      onSettled: (res) => {
+        if (res?.status === 201) {
+          toast("Success", {
+            description: res?.message || "Sub task add succesfully.",
+          });
+        } else {
+          toast("Error", {
+            description: res?.message || "Something went wrong.",
+          });
+        }
+        queryClient.invalidateQueries({
+          queryKey: appKeys.getUserTask(userId),
+        });
+      },
+    });
+
+  return {
+    isCreatingSubtask,
+    createSubTaskMutate,
   };
 };

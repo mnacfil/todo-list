@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubTask, Task, User } from "@prisma/client";
-import React, { useRef, useState } from "react";
+import React, { RefObject, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -38,6 +38,7 @@ import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import ToggleAddTask from "../global/toggle-add-task";
 import { updateTask } from "@/actions/task";
+import { useTask } from "@/hooks/task";
 
 type Props = {
   userId: string;
@@ -57,7 +58,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
   const [isComment, setIsComment] = useState(false);
   const [isAddingSubTask, setIsAddingSubTask] = useState(false);
   const [showSubTasks, setShowSubTasks] = useState(true);
-  const pathname = usePathname();
+  const { isUpdating, updateMutate } = useTask(userId);
   const ref = useRef<HTMLDivElement | null>(null);
 
   const form = useForm<z.infer<typeof schema>>({
@@ -80,26 +81,12 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
   };
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    console.log("hello world");
-    try {
-      await updateTask({
-        taskId: task.id,
-        newTask: {
-          ...task,
-          title: values.title,
-          description: values.description,
-          priority: values.priority,
-        },
-        pathname: pathname,
-      });
-      toast("Success", {
-        description: "Task updated",
-      });
-    } catch (error) {
-      toast("Error", {
-        description: "Error while adding subTask",
-      });
-    }
+    console.log(values);
+
+    updateMutate({
+      id: task.id,
+      data: { ...values, author: { connect: { clerkId: userId } } },
+    });
   };
 
   return (
@@ -108,13 +95,15 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
         <Checkbox className="rounded-full w-4 h-4 opacity-50 mt-[18px]" />
         <div className="flex-1 flex-col">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              ref={ref as RefObject<HTMLFormElement>}
+            >
               <div
                 className={clsx(
                   "",
                   isFocus && "border-gray-500/50 rounded-md border"
                 )}
-                ref={ref}
               >
                 <FormField
                   control={form.control}
@@ -187,6 +176,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
                         "bg-red-500": form.getValues("title").length > 0,
                       }
                     )}`}
+                    disabled={isUpdating}
                   >
                     Save
                   </Button>

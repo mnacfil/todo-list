@@ -61,7 +61,7 @@ import {
 } from "../ui/tooltip";
 import { createSubTask, createTask, updateTask } from "@/actions/task";
 import { toast } from "sonner";
-import { useTask } from "@/hooks/task";
+import { useSubTask, useTask } from "@/hooks/task";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -90,6 +90,7 @@ const AddTask = ({
   const pathname = usePathname();
   const [taskPriority, setTaskPriority] = useState<TaskPriority>("p4");
   const { isPending, isUpdating, mutate, updateMutate } = useTask(userId);
+  const { isCreatingSubtask, createSubTaskMutate } = useSubTask(userId);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -115,24 +116,23 @@ const AddTask = ({
         }
       }
       if (isAddingSubTask) {
-        const res = await createSubTask({
+        createSubTaskMutate({
+          userId,
+          taskId: currentTask?.id as string,
           data: {
-            title: values.title,
-            description: values.description,
-            authorId: userId,
-            taskId: currentTask?.id as string,
+            ...values,
+            author: {
+              connect: {
+                clerkId: userId,
+              },
+            },
+            task: {
+              connect: {
+                id: currentTask?.id,
+              },
+            },
           },
-          pathname,
         });
-        if (res.status === 201) {
-          toast("Success", {
-            description: res.message,
-          });
-        } else {
-          toast("Error", {
-            description: res.message,
-          });
-        }
       }
       if (!isEditing && !isAddingSubTask) {
         mutate({
@@ -376,7 +376,7 @@ const AddTask = ({
                   "bg-red-500": form.getValues("title").length > 0,
                 }
               )}`}
-              disabled={isPending}
+              disabled={isPending || isUpdating}
             >
               {isEditing ? "Save" : "Add Task"}
             </Button>

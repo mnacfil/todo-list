@@ -1,8 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { Prisma, SubTask } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const getUserTasks = async (id: string) => {
@@ -43,22 +42,30 @@ export const getUserTasks = async (id: string) => {
 };
 
 export const createSubTask = async ({
+  taskId,
+  userId,
   data,
-  pathname,
 }: {
-  data: Pick<SubTask, "authorId" | "taskId" | "title" | "description">;
-  pathname: string;
+  taskId: string;
+  userId: string;
+  data: Prisma.SubTaskCreateInput;
 }) => {
   try {
     const subTask = await prisma.subTask.create({
       data: {
-        title: data.title,
-        description: data.description,
-        taskId: data.taskId,
-        authorId: data.authorId,
+        ...data,
+        author: {
+          connect: {
+            clerkId: userId,
+          },
+        },
+        task: {
+          connect: {
+            id: taskId,
+          },
+        },
       },
     });
-    revalidatePath(pathname);
     return {
       status: 201,
       data: subTask,

@@ -139,7 +139,8 @@ export const deleteTask = async (id: string) => {
 
     return {
       status: 200,
-      message: "Task has been removed succesfully.",
+      data: task,
+      message: "1 Task completed.",
     };
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {

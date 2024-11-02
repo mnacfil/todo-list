@@ -10,6 +10,7 @@ import AddTask from "@/components/form/add-task";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import MoreOptions from "./more-options";
 import TaskDialog from "./task-dialog";
+import { useTask } from "@/hooks/task";
 
 type Props = {
   task: any;
@@ -17,25 +18,8 @@ type Props = {
 };
 
 const Task = ({ task, userId }: Props) => {
-  const pathname = usePathname();
+  const { deleteMutate } = useTask(userId);
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleCheckTask = async (e: CheckedState) => {
-    // const deletedTask = await deleteTask({ taskId: task.id, pathname });
-    // toast({
-    //   title: "1 task completed",
-    //   action: (
-    //     <ToastAction
-    //       altText="Goto today to undo"
-    //       onClick={async () =>
-    //         await addTask({ title: deletedTask.title, user, pathname })
-    //       }
-    //     >
-    //       Undo
-    //     </ToastAction>
-    //   ),
-    // });
-  };
 
   const onCancelTask = () => setIsEditing(false);
   const onEditTask = () => setIsEditing(true);
@@ -57,7 +41,7 @@ const Task = ({ task, userId }: Props) => {
                 <Checkbox
                   id="task"
                   className="rounded-full text-gray-500!"
-                  onCheckedChange={(e) => handleCheckTask(e)}
+                  onCheckedChange={() => deleteMutate(task.id)}
                   color="red"
                 />
                 <DialogTrigger asChild className="cursor-pointer">

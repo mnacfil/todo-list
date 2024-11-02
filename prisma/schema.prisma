@@ -24,7 +24,7 @@ model Task {
   updatedAt   DateTime  @updatedAt
   title       String
   description String?
-  author      User      @relation(fields: [authorId], references: [id])
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId    String
   dueDate     DateTime?
   priority    String?
@@ -42,8 +42,8 @@ model SubTask {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   title       String
-  author      User      @relation(fields: [authorId], references: [id])
-  task        Task      @relation(fields: [taskId], references: [id])
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId      String
   authorId    String
   description String?

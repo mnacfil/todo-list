@@ -59,7 +59,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
   const [isAddingSubTask, setIsAddingSubTask] = useState(false);
   const [showSubTasks, setShowSubTasks] = useState(true);
   const { isUpdating, updateMutate } = useTask(userId);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLFormElement | null>(null);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -70,7 +70,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
     },
   });
 
-  useClickOutside({ ref, callback: () => setIsFocus(false) });
+  // useClickOutside({ ref, callback: () => setIsFocus(false) });
 
   const onAddSubTask = () => {
     setIsAddingSubTask(true);
@@ -81,14 +81,11 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
   };
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
-    console.log(values);
-
     updateMutate({
       id: task.id,
       data: { ...values, author: { connect: { clerkId: userId } } },
     });
   };
-
   return (
     <>
       <div className="flex gap-1">
@@ -185,7 +182,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
               <div></div>
             </form>
           </Form>
-          {task.subTasks.length > 0 && (
+          {task?.subTasks?.length > 0 && (
             <>
               <div className="flex gap-2 cursor-pointer">
                 <ChevronDown />
@@ -195,14 +192,19 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
                   </p>
                   <Separator className="mt-2" />
                   {showSubTasks && (
-                    <div className="divide-y flex flex-col">
+                    <div className="divide-y flex flex-col overflow-y-auto max-h-44">
                       {task.subTasks.map((subTask: SubTask) => (
                         <div
                           key={subTask.id}
                           className="flex items-center gap-2 py-2"
                         >
                           <Checkbox className="rounded-full w-4 h-4 opacity-50" />
-                          <h4>{subTask.title}</h4>
+                          <div className="flex flex-col gap-1">
+                            <h4 className="text-sm">{subTask.title}</h4>
+                            <p className="text-muted-foreground text-xs">
+                              {subTask.description}
+                            </p>
+                          </div>
                         </div>
                       ))}
                       <Separator className="mb-2" />
@@ -231,7 +233,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
               </div>
             </>
           )}
-          {task.subTasks.length === 0 &&
+          {task?.subTasks?.length === 0 &&
             (isAddingSubTask ? (
               <AddTask
                 userId={userId}

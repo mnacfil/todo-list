@@ -8,6 +8,10 @@ import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { appKeys } from "@/lib/react-query";
 
+// Todo
+// fix bug when deleting the task, when clicking the row it run the delete mutate
+// Delete only when user click the check button
+
 const TodayPage = () => {
   const user = useAuth();
 

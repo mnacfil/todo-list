@@ -27,10 +27,11 @@ import {
   Star,
   User,
 } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 
 export const UserDropdown = () => {
   const { signOut } = useClerk();
+  const { user } = useUser();
 
   const onLogout = () => {
     signOut({ redirectUrl: "/" });
@@ -41,10 +42,12 @@ export const UserDropdown = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="hover:bg-gray-100 space-x-2">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage
+              src={user?.imageUrl ?? "https://github.com/shadcn.png"}
+            />
             <AvatarFallback>MN</AvatarFallback>
           </Avatar>
-          <p>Melvin</p>
+          <p>{user?.firstName + " " + user?.lastName}</p>
           <ChevronDown className="w-4 h-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>

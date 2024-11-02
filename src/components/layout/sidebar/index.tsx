@@ -17,9 +17,7 @@ import {
 } from "@/components/constants/sidebar";
 import Link from "next/link";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import AddTask from "@/components/form/add-task";
-import { getCurrentUser } from "@/app/(main-app)/app/(today)/action";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 type Props = {};

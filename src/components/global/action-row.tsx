@@ -1,13 +1,10 @@
-import { Edit, List, LucideProps, MoveUp } from "lucide-react";
 import React, { ReactNode } from "react";
 
 type Props = {
   title: string;
   isLabel?: boolean;
   endInfo?: string;
-  Icon?: React.ForwardRefExoticComponent<
-    Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
-  >;
+  Icon?: any;
   TitleIcon?: Props["Icon"];
   EndInfoIcon?: Props["Icon"];
   color?: string;

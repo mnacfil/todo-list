@@ -22,7 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Task, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,10 +42,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTask } from "@/hooks/task";
-import { toast } from "sonner";
 
 type Props = {
-  task: Task;
+  task: Prisma.TaskCreateInput;
   userId: string;
   onClickEdit: () => void;
 };
@@ -185,7 +184,7 @@ const MoreOptions = ({ task, userId, onClickEdit }: Props) => {
                     </AlertDialogCancel>
                     <AlertDialogAction
                       className="bg-red-600/85 text-white hover:bg-red-600 text-[12px] px-3"
-                      onClick={() => deleteMutate(task?.id)}
+                      onClick={() => deleteMutate(task?.id as string)}
                       disabled={isDeleting}
                     >
                       Continue

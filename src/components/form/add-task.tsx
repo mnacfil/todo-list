@@ -28,8 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { Task, User } from "@prisma/client";
-import { useToast } from "../ui/use-toast";
+import { Prisma } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";
 import {
@@ -73,7 +72,7 @@ const schema = z.object({
 type Props = {
   userId: string;
   isEditing?: boolean;
-  currentTask?: Task;
+  currentTask?: Prisma.TaskCreateInput;
   onCancel?: () => void;
   isAddingSubTask?: boolean;
 };

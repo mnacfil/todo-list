@@ -4,10 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Calendar, Edit2, InboxIcon, MessageSquare } from "lucide-react";
-import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import AddTask from "@/components/form/add-task";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import MoreOptions from "./more-options";
 import TaskDialog from "./task-dialog";
 import { useTask } from "@/hooks/task";
@@ -38,17 +36,21 @@ const Task = ({ task, userId }: Props) => {
           <div className="p-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
-                <Checkbox
-                  id="task"
-                  className="rounded-full text-gray-500!"
-                  onCheckedChange={() => deleteMutate(task.id)}
-                  color="red"
-                />
-                <DialogTrigger asChild className="cursor-pointer">
+                <Label htmlFor="taskCheckbox">
+                  <Checkbox
+                    id="taskCheckbox"
+                    className="rounded-full text-gray-500!"
+                    onCheckedChange={() => deleteMutate(task?.id as string)}
+                    color="red"
+                  />
+                </Label>
+                <DialogTrigger
+                  asChild
+                  className="cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex flex-col gap-[0.5px]">
-                    <Label htmlFor="task" className="text-sm font-light">
-                      {task.title}
-                    </Label>
+                    <h4 className="text-sm font-light">{task.title}</h4>
                     <p className="p-0 text-sm font-light text-gray-500">
                       {task.description}
                     </p>

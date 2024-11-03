@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubTask, Task, User } from "@prisma/client";
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, SetStateAction, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -39,10 +39,12 @@ import { toast } from "sonner";
 import ToggleAddTask from "../global/toggle-add-task";
 import { updateTask } from "@/actions/task";
 import { useTask } from "@/hooks/task";
+import { Label } from "../ui/label";
 
 type Props = {
   userId: string;
   task: any;
+  onOpenChange: React.Dispatch<SetStateAction<boolean>>;
 };
 
 // Todo: add more property in this schema
@@ -52,7 +54,7 @@ const schema = z.object({
   priority: z.string(),
 });
 
-const TaskOverviewForm = ({ userId, task }: Props) => {
+const TaskOverviewForm = ({ userId, task, onOpenChange }: Props) => {
   // const [isChecked, isChecked] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [isComment, setIsComment] = useState(false);
@@ -70,7 +72,7 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
     },
   });
 
-  // useClickOutside({ ref, callback: () => setIsFocus(false) });
+  useClickOutside({ ref, callback: () => setIsFocus(false) });
 
   const onAddSubTask = () => {
     setIsAddingSubTask(true);
@@ -85,15 +87,25 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
       id: task.id,
       data: { ...values, author: { connect: { clerkId: userId } } },
     });
+    onOpenChange(true);
   };
   return (
     <>
       <div className="flex gap-1">
-        <Checkbox className="rounded-full w-4 h-4 opacity-50 mt-[18px]" />
+        <Label htmlFor="taskCheckbox">
+          <Checkbox
+            id="taskCheckbox"
+            className="rounded-full w-4 h-4 opacity-50 mt-[18px]"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Label>
         <div className="flex-1 flex-col">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)(e);
+              }}
               ref={ref as RefObject<HTMLFormElement>}
             >
               <div
@@ -198,7 +210,13 @@ const TaskOverviewForm = ({ userId, task }: Props) => {
                           key={subTask.id}
                           className="flex items-center gap-2 py-2"
                         >
-                          <Checkbox className="rounded-full w-4 h-4 opacity-50" />
+                          <Label htmlFor="subtaskCheckbox">
+                            <Checkbox
+                              id="subtaskCheckbox"
+                              className="rounded-full w-4 h-4 opacity-50"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </Label>
                           <div className="flex flex-col gap-1">
                             <h4 className="text-sm">{subTask.title}</h4>
                             <p className="text-muted-foreground text-xs">

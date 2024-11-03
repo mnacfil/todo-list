@@ -18,9 +18,12 @@ type Props = {
 const Task = ({ task, userId }: Props) => {
   const { deleteMutate } = useTask(userId);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
 
   const onCancelTask = () => setIsEditing(false);
   const onEditTask = () => setIsEditing(true);
+
+  console.log(showDialog);
 
   return (
     <>
@@ -32,7 +35,7 @@ const Task = ({ task, userId }: Props) => {
           onCancel={onCancelTask}
         />
       ) : (
-        <Dialog>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <div className="p-2 flex flex-col gap-1">
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
@@ -47,9 +50,14 @@ const Task = ({ task, userId }: Props) => {
                 <DialogTrigger
                   asChild
                   className="cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
-                  <div className="flex flex-col gap-[0.5px]">
+                  <div
+                    className="flex flex-col gap-[0.5px]"
+                    onClick={() => setShowDialog(true)}
+                  >
                     <h4 className="text-sm font-light">{task.title}</h4>
                     <p className="p-0 text-sm font-light text-gray-500">
                       {task.description}
@@ -78,7 +86,11 @@ const Task = ({ task, userId }: Props) => {
             </div>
           </div>
           <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] gap-0">
-            <TaskDialog userId={userId} task={task} />
+            <TaskDialog
+              userId={userId}
+              task={task}
+              onOpenChange={setShowDialog}
+            />
           </DialogContent>
         </Dialog>
       )}

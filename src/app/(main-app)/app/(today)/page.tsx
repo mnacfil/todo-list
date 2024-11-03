@@ -9,8 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { appKeys } from "@/lib/react-query";
 
 // Todo
-// fix bug when deleting the task, when clicking the row it run the delete mutate
-// Delete only when user click the check button
+// Fix bug when submitting the form in the dialog of Task
 
 const TodayPage = () => {
   const user = useAuth();

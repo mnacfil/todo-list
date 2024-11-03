@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Inbox } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -7,9 +7,10 @@ import TaskOverviewForm from "@/components/form/task-overview";
 type Props = {
   userId: string;
   task: any;
+  onOpenChange: React.Dispatch<SetStateAction<boolean>>;
 };
 
-const TaskDialog = ({ userId, task }: Props) => {
+const TaskDialog = ({ userId, task, onOpenChange }: Props) => {
   return (
     <>
       <DialogHeader className="flex px-4 py-2 flex-row items-center justify-between ">
@@ -22,7 +23,11 @@ const TaskDialog = ({ userId, task }: Props) => {
       <Separator className="h-[1px] bg-gray-200" />
       <div className="flex flex-row flex-1">
         <div className="flex-1 p-4">
-          <TaskOverviewForm userId={userId} task={task} />
+          <TaskOverviewForm
+            userId={userId}
+            task={task}
+            onOpenChange={onOpenChange}
+          />
         </div>
         <div className="bg-orange-100/50 min-w-[300px]">Side</div>
       </div>

@@ -1,14 +1,22 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Calendar, Edit2, InboxIcon, MessageSquare } from "lucide-react";
+import { Calendar, Edit2, Inbox, InboxIcon, MessageSquare } from "lucide-react";
 import React, { useState } from "react";
-import AddTask from "@/components/form/add-task";
+import AddTaskForm from "@/components/form/add-task";
 import MoreOptions from "./more-options";
-import TaskDialog from "./task-dialog";
 import { useTask } from "@/hooks/task";
+import TaskOverviewForm from "@/components/form/task-overview";
+import { Separator } from "@radix-ui/react-separator";
+import TaskOverview from "./task-overview";
 
 type Props = {
   task: any;
@@ -23,12 +31,10 @@ const Task = ({ task, userId }: Props) => {
   const onCancelTask = () => setIsEditing(false);
   const onEditTask = () => setIsEditing(true);
 
-  console.log(showDialog);
-
   return (
     <>
       {isEditing ? (
-        <AddTask
+        <AddTaskForm
           userId={userId}
           currentTask={task}
           isEditing={isEditing}
@@ -86,11 +92,24 @@ const Task = ({ task, userId }: Props) => {
             </div>
           </div>
           <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] gap-0">
-            <TaskDialog
-              userId={userId}
-              task={task}
-              onOpenChange={setShowDialog}
-            />
+            <DialogHeader className="flex px-4 py-2 flex-row items-center justify-between ">
+              <div className="flex items-center space-x-2">
+                <Inbox className="w-4 h-4 opacity-50" />
+                <DialogTitle>Inbox</DialogTitle>
+              </div>
+              {/* <div className="text-sm font-light">more actions</div> */}
+            </DialogHeader>
+            <Separator className="h-[1px] bg-gray-200" />
+            <div className="flex flex-row flex-1">
+              <div className="flex-1 p-4">
+                <TaskOverview
+                  userId={userId}
+                  task={task}
+                  onOpenChange={setShowDialog}
+                />
+              </div>
+              <div className="bg-orange-100/50 min-w-[300px]">Side</div>
+            </div>
           </DialogContent>
         </Dialog>
       )}

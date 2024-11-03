@@ -18,6 +18,7 @@ export const getUserTasks = async (id: string) => {
       include: {
         author: true,
         subTasks: true,
+        comments: true,
       },
     });
     if (tasks && tasks.length > 0) {

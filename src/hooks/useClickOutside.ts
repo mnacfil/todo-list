@@ -10,7 +10,7 @@ type Params = {
 export const useClickOutside = ({ ref, callback }: Params) => {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      console.log((e.target as Node).textContent);
+      // console.log((e.target as Node).textContent);
 
       if (
         ref.current &&

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card } from "../ui/card";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,24 +12,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
+} from "../../ui/form";
 import { Prisma } from "@prisma/client";
 import { usePathname } from "next/navigation";
-import { Separator } from "../ui/separator";
 import {
   CalendarIcon,
   Check,
@@ -41,33 +25,39 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { priorities } from "../constants";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
+import { createSubTask, createTask, updateTask } from "@/actions/task";
+import { toast } from "sonner";
+import { useSubTask, useTask } from "@/hooks/task";
+import { AddTaskFormSchema } from "./schema";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { createSubTask, createTask, updateTask } from "@/actions/task";
-import { toast } from "sonner";
-import { useSubTask, useTask } from "@/hooks/task";
-
-const schema = z.object({
-  title: z.string().min(1),
-  description: z.string(),
-  priority: z.string(),
-  // labels: z.string(),
-});
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { priorities } from "@/components/constants";
 
 type Props = {
   userId: string;
@@ -79,7 +69,7 @@ type Props = {
 
 type TaskPriority = "p1" | "p2" | "p3" | "p4";
 
-const AddTask = ({
+const AddTaskForm = ({
   isEditing = false,
   userId,
   currentTask,
@@ -91,8 +81,8 @@ const AddTask = ({
   const { isPending, isUpdating, mutate, updateMutate } = useTask(userId);
   const { isCreatingSubtask, createSubTaskMutate } = useSubTask(userId);
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<z.infer<typeof AddTaskFormSchema>>({
+    resolver: zodResolver(AddTaskFormSchema),
     defaultValues: {
       title: isEditing ? currentTask?.title : "",
       description: isEditing
@@ -104,7 +94,7 @@ const AddTask = ({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
+  const onSubmit = async (values: z.infer<typeof AddTaskFormSchema>) => {
     try {
       if (isEditing) {
         if (currentTask?.id) {
@@ -386,4 +376,4 @@ const AddTask = ({
   );
 };
 
-export default AddTask;
+export default AddTaskForm;

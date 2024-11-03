@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import AddTask from "@/components/form/add-task";
+import AddTaskForm from "@/components/form/add-task";
 import { PlusIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getUserTasks } from "@/actions/task";
 
 type Props = {
   userId: string;
@@ -30,7 +28,7 @@ const ToggleAddTask = ({
   return (
     <>
       {isAddingTask ? (
-        <AddTask
+        <AddTaskForm
           userId={userId}
           onCancel={closeAddTaskForm}
           isAddingSubTask={isAddingSubTask}

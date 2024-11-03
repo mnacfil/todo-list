@@ -16,6 +16,7 @@ model User {
   image     String?
   tasks     Task[]
   SubTask   SubTask[]
+  Comment   Comment[]
 }
 
 model Task {
@@ -31,6 +32,7 @@ model Task {
   reminder    String?
   labels      String?
   subTasks    SubTask[]
+  comments    Comment[]
 }
 
 // Project model
@@ -54,3 +56,18 @@ model SubTask {
 }
 
 // Comment
+
+model Comment {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  content   String
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  replied   Boolean?  @default(false)
+  reply     Comment[] @relation(name: "CommentToComments")
+  Comment   Comment?  @relation(name: "CommentToComments", fields: [commentId], references: [id])
+  commentId String?
+}

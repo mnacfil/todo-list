@@ -1,6 +1,6 @@
 "use client";
 
-import { SubTask } from "@prisma/client";
+import { Prisma, SubTask } from "@prisma/client";
 import React, { RefObject, SetStateAction, useRef, useState } from "react";
 import { ChevronDown, Paperclip, Plus } from "lucide-react";
 import AddTaskForm from "@/components/form/add-task";
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CommentForm from "@/components/form/comment";
 
 type Props = {
   userId: string;
@@ -106,17 +107,36 @@ const TaskOverview = ({ userId, task, onOpenChange }: Props) => {
           )}
           {task?.comments?.length > 0 ? (
             <HideAndShow label="Comments" total={task?.comments?.length}>
-              content here
+              <div className="divide-y flex flex-col overflow-y-auto max-h-44">
+                {task.comments.map((comment: Prisma.CommentCreateInput) => (
+                  <div
+                    key={comment.id}
+                    className="flex items-center gap-2 py-2"
+                  >
+                    <p className="text-muted-foreground text-xs">
+                      {comment.content}
+                    </p>
+                  </div>
+                ))}
+                <Separator className="mb-2" />
+              </div>
             </HideAndShow>
           ) : isComment ? (
-            <Card>Add coment here</Card>
+            <CommentForm
+              userId={userId}
+              taskId={task.id}
+              onCancel={() => setIsComment(false)}
+            />
           ) : (
             <div className="flex items-center space-x-2 my-5">
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>MN</AvatarFallback>
               </Avatar>
-              <div className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50">
+              <div
+                className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50"
+                onClick={() => setIsComment(true)}
+              >
                 <span className="text-sm">Comment</span>
                 <Paperclip className="w-4 h-4 opacity-50" />
               </div>

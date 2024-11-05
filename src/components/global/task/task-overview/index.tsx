@@ -2,7 +2,13 @@
 
 import { Prisma, SubTask } from "@prisma/client";
 import React, { RefObject, SetStateAction, useRef, useState } from "react";
-import { ChevronDown, Paperclip, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  EllipsisIcon,
+  Paperclip,
+  Plus,
+  Smile,
+} from "lucide-react";
 import AddTaskForm from "@/components/form/add-task";
 import { Card } from "@/components/ui/card";
 import ToggleAddTask from "../../toggle-add-task";
@@ -13,6 +19,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CommentForm from "@/components/form/comment";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Props = {
   userId: string;
@@ -32,6 +44,8 @@ const TaskOverview = ({ userId, task, onOpenChange }: Props) => {
   const onCancelSubTask = () => {
     setIsAddingSubTask(false);
   };
+
+  console.log(task?.comments);
 
   return (
     <>
@@ -106,21 +120,73 @@ const TaskOverview = ({ userId, task, onOpenChange }: Props) => {
             </>
           )}
           {task?.comments?.length > 0 ? (
-            <HideAndShow label="Comments" total={task?.comments?.length}>
-              <div className="divide-y flex flex-col overflow-y-auto max-h-44">
-                {task.comments.map((comment: Prisma.CommentCreateInput) => (
+            <>
+              <HideAndShow label="Comments" total={task?.comments?.length}>
+                <div className="flex flex-col overflow-y-auto">
+                  {task.comments.map((comment: any) => (
+                    <div key={comment.id} className="flex gap-2 py-2">
+                      <Avatar className="w-7 h-7">
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>MN</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col gap-1 w-full">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <p className="font-semibold text-sm">Name</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(comment.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <div className="p-1 rounded-sm hover:bg-gray-100 transition-all cursor-pointer">
+                              <Smile size={18} className="" />
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                asChild
+                                className="rounded-sm hover:bg-gray-100 transition-all cursor-pointer"
+                              >
+                                <EllipsisIcon size={18} />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>Copy text</DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  Copy link to comment
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                        <p className="text-sm">{comment.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </HideAndShow>
+              {isComment ? (
+                <CommentForm
+                  userId={userId}
+                  taskId={task.id}
+                  onCancel={() => setIsComment(false)}
+                />
+              ) : (
+                <div className="flex items-center space-x-2 my-5">
+                  <Avatar className="w-7 h-7">
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>MN</AvatarFallback>
+                  </Avatar>
                   <div
-                    key={comment.id}
-                    className="flex items-center gap-2 py-2"
+                    className="rounded-full flex-1 border border-gray-100 px-4 py-1 flex justify-between items-center cursor-pointer hover:bg-orange-50/50"
+                    onClick={() => setIsComment(true)}
                   >
-                    <p className="text-muted-foreground text-xs">
-                      {comment.content}
-                    </p>
+                    <span className="text-sm">Comment</span>
+                    <Paperclip className="w-4 h-4 opacity-50" />
                   </div>
-                ))}
-                <Separator className="mb-2" />
-              </div>
-            </HideAndShow>
+                </div>
+              )}
+            </>
           ) : isComment ? (
             <CommentForm
               userId={userId}

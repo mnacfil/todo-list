@@ -53,6 +53,7 @@ const CommentForm = ({ onCancel, userId, taskId }: Props) => {
         },
       },
     });
+    form.reset();
   };
 
   return (

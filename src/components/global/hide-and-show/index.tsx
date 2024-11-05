@@ -13,7 +13,7 @@ type Props = {
 };
 
 const HideAndShow = ({ children, label, total, count }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div className="flex gap-2 w-full">

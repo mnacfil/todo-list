@@ -43,7 +43,7 @@ const ToggleAddTask = ({
             size={16}
             className="text-red-500 font-light group-hover:text-white group-hover:bg-red-500 group-hover:rounded-full"
           />
-          <p className="text-gray-500 text-sm font-light group-hover:text-red-500">
+          <p className="text-gray-500 text-xs font-light group-hover:text-red-500">
             Add task
           </p>
         </div>

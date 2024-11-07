@@ -7,21 +7,22 @@ import React, { ReactNode, useState } from "react";
 
 type Props = {
   label: string;
+  subLabel: string;
   children: ReactNode;
-  total: number;
-  count?: number;
 };
 
-const HideAndShow = ({ children, label, total, count }: Props) => {
+const HideAndShow = ({ children, label, subLabel }: Props) => {
   const [open, setOpen] = useState(true);
 
   return (
     <div className="flex gap-2 w-full">
       <ChevronRight
-        size={20}
-        className={`cursor-pointer transition-all mt-[2.5px] ${clsx({
-          "rotate-90": open,
-        })}`}
+        size={18}
+        className={`cursor-pointer text-gray-500 transition-all mt-[2.5px] ${clsx(
+          {
+            "rotate-90": open,
+          }
+        )}`}
         onClick={() => setOpen((prev) => !prev)}
       />
       <div
@@ -33,8 +34,8 @@ const HideAndShow = ({ children, label, total, count }: Props) => {
           className="flex items-center gap-1 cursor-pointer"
           onClick={() => setOpen((prev) => !prev)}
         >
-          <p>{label} </p>
-          <span>{count ? `${count}/${total}` : total}</span>
+          <p className="text-xs">{label} </p>
+          <span className="text-muted-foreground text-[10px]">{subLabel}</span>
         </div>
         {open && children}
         {!open && <Separator />}

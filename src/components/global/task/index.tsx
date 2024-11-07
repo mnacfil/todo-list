@@ -17,6 +17,7 @@ import { useTask } from "@/hooks/task";
 import TaskOverviewForm from "@/components/form/task-overview";
 import { Separator } from "@radix-ui/react-separator";
 import TaskOverview from "./task-overview";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type Props = {
   task: any;
@@ -91,7 +92,7 @@ const Task = ({ task, userId }: Props) => {
               <InboxIcon className="text-gray-500" size={12} />
             </div>
           </div>
-          <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] gap-0">
+          <DialogContent className="w-full flex flex-col sm:max-w-4xl p-0 min-h-[80%] max-h-[80%] gap-0">
             <DialogHeader className="flex px-4 py-2 flex-row items-center justify-between ">
               <div className="flex items-center space-x-2">
                 <Inbox className="w-4 h-4 opacity-50" />
@@ -101,13 +102,11 @@ const Task = ({ task, userId }: Props) => {
             </DialogHeader>
             <Separator className="h-[1px] bg-gray-200" />
             <div className="flex flex-row flex-1">
-              <div className="flex-1 p-4">
-                <TaskOverview
-                  userId={userId}
-                  task={task}
-                  onOpenChange={setShowDialog}
-                />
-              </div>
+              <TaskOverview
+                userId={userId}
+                task={task}
+                onOpenChange={setShowDialog}
+              />
               <div className="bg-orange-100/50 min-w-[300px]">Side</div>
             </div>
           </DialogContent>

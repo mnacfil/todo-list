@@ -1,16 +1,9 @@
 "use client";
 
-import { Prisma, SubTask } from "@prisma/client";
-import React, { RefObject, SetStateAction, useRef, useState } from "react";
-import {
-  ChevronDown,
-  EllipsisIcon,
-  Paperclip,
-  Plus,
-  Smile,
-} from "lucide-react";
+import { SubTask } from "@prisma/client";
+import React, { SetStateAction, useState } from "react";
+import { EllipsisIcon, Paperclip, Plus, Smile } from "lucide-react";
 import AddTaskForm from "@/components/form/add-task";
-import { Card } from "@/components/ui/card";
 import ToggleAddTask from "../../toggle-add-task";
 import TaskOverviewForm from "@/components/form/task-overview";
 import HideAndShow from "../../hide-and-show";

@@ -1,13 +1,9 @@
-import { getUserTasks } from "@/actions/task";
 import Sidebar from "@/components/layout/sidebar";
-import { appKeys } from "@/lib/react-query";
-import { currentUser } from "@clerk/nextjs/server";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
 import React from "react";
 
 type Props = {
@@ -16,13 +12,6 @@ type Props = {
 
 const AppLayout = async ({ children }: Props) => {
   const queryClient = new QueryClient();
-  const user = await currentUser();
-  if (!user) redirect("/login");
-  queryClient.prefetchQuery({
-    queryKey: appKeys.getUserTask(user?.id),
-    queryFn: () => getUserTasks(user.id),
-  });
-
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <main className="h-screen w-full flex">

@@ -20,11 +20,6 @@ const ToggleAddTask = ({
   const openAddTaskForm = () => setIsAddingTask(true);
   const closeAddTaskForm = () => setIsAddingTask(false);
 
-  // const query = useQuery({
-  //   queryKey: ["tasks"],
-  //   queryFn: () => getUserTasks(userId),
-  // });
-
   return (
     <>
       {isAddingTask ? (

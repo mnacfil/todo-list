@@ -14,10 +14,8 @@ import React, { useState } from "react";
 import AddTaskForm from "@/components/form/add-task";
 import MoreOptions from "./more-options";
 import { useTask } from "@/hooks/task";
-import TaskOverviewForm from "@/components/form/task-overview";
 import { Separator } from "@radix-ui/react-separator";
 import TaskOverview from "./task-overview";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type Props = {
   task: any;
